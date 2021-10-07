@@ -1,0 +1,7 @@
+name: Generate Readme
+on: [push]
+jobs:
+  Generate-Readme:
+    runs-on: ubuntu-latest
+    steps:
+      - run: sh generate_readme.sh > README.md
