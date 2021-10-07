@@ -4,4 +4,5 @@ jobs:
   Generate-Readme:
     runs-on: ubuntu-latest
     steps:
+      - uses: actions/checkout@master
       - run: sh generate_readme.sh > README.md
