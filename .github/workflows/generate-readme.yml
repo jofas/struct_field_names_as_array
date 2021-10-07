@@ -5,7 +5,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@master
+      - run: /bin/bash generate_readme.sh > README.md
       - uses: EndBug/add-and-commit@v7
         with:
           message: 'automatically generated readme from src/lib.rs top-level documentation'
-      - run: /bin/bash generate_readme.sh > README.md
+          add: 'README.md'
