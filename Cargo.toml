@@ -1,8 +1,8 @@
 [package]
 name = "struct-field-names-as-array"
-version = "0.1.0"
+version = "0.1.1"
 authors = ["jofas <jonas@fc-web.de>"]
-edition = "2021"
+edition = "2018"
 license = "MIT"
 readme = "README.md"
 description = "Provides a procedural macro that generates an array of the field names of a named struct"
