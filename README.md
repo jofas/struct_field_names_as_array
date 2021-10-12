@@ -25,3 +25,25 @@ struct Foo {
 
 assert_eq!(Foo::FIELD_NAMES_AS_ARRAY, ["bar", "baz", "bat"]);
 ```
+
+The `FieldNamesAsArray` macro supports the
+`field_names_as_array` attribute with the following possible
+arguments:
+
+* `skip`: do not add the field to `FIELD_NAMES_AS_ARRAY`
+
+  **Example**
+
+  ```rust
+  use struct_field_names_as_array::FieldNamesAsArray;
+
+  #[derive(FieldNamesAsArray)]
+  struct Foo {
+    bar: String,
+    baz: String,
+    #[field_names_as_array(skip)]
+    bat: String,
+  }
+
+  assert_eq!(Foo::FIELD_NAMES_AS_ARRAY, ["bar", "baz"]);
+  ```

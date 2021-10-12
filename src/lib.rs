@@ -1,29 +1,4 @@
-//! Provides the `FieldNamesAsArray` procedural macro.
-//!
-//! The procedural macro adds the ``FIELD_NAMES_AS_ARRAY`` constant to
-//! the struct.
-//! The `FIELD_NAMES_AS_ARRAY` is an array containing the field names
-//! of the struct (as the name suggests).
-//! The visibility of the `FIELD_NAMES_AS_ARRAY` is the same as the
-//! corresponding struct.
-//!
-//! **NOTE:** the macro can only be derived by named structs.
-//!
-//! ## Example
-//!
-//! ```rust
-//! use struct_field_names_as_array::FieldNamesAsArray;
-//!
-//! #[derive(FieldNamesAsArray)]
-//! struct Foo {
-//!   bar: String,
-//!   baz: String,
-//!   bat: String,
-//! }
-//!
-//! assert_eq!(Foo::FIELD_NAMES_AS_ARRAY, ["bar", "baz", "bat"]);
-//! ```
-//!
+#![doc = include_str!("../README.md")]
 
 extern crate proc_macro;
 use proc_macro::TokenStream;
@@ -31,12 +6,12 @@ use proc_macro::TokenStream;
 use quote::quote;
 use syn::punctuated::Punctuated;
 use syn::token::Comma;
-use syn::{parse_macro_input, Data, DeriveInput, Fields};
+use syn::{parse_macro_input, Data, DeriveInput, Fields, AttrStyle, Meta, NestedMeta};
 
 const ERR_MSG: &str =
   "Derive(FieldNamesAsArray) only applicable to named structs";
 
-#[proc_macro_derive(FieldNamesAsArray)]
+#[proc_macro_derive(FieldNamesAsArray, attributes(field_names_as_array))]
 pub fn derive_field_names_as_array(
   input: TokenStream,
 ) -> TokenStream {
@@ -52,7 +27,53 @@ pub fn derive_field_names_as_array(
       Fields::Named(fields) => fields
         .named
         .into_iter()
-        .map(|f| f.ident.unwrap().to_string())
+        .filter_map(|f| {
+          for attr in f.attrs.iter() {
+            match attr.style {
+              AttrStyle::Outer => {},
+              _ => continue,
+            }
+
+            let attr_name = attr
+              .path
+              .segments
+              .iter()
+              .last()
+              .cloned()
+              .expect("attribute is badly formatted");
+
+            if attr_name.ident != "field_names_as_array" {
+              continue;
+            }
+
+            let meta = attr
+              .parse_meta()
+              .expect("cannot parse attribute to meta");
+
+            let list = match meta {
+              Meta::List(l) => l,
+              _ => panic!("field_names_as_array needs an argument"),
+            };
+
+            let arg = list
+              .nested
+              .iter()
+              .next()
+              .expect("argument list cannot be empty");
+
+            match arg {
+              NestedMeta::Meta(m) => {
+                match m.path().get_ident() {
+                  Some(i) if i == "skip" => return None,
+                  _ => panic!("unknown argument"),
+                }
+              }
+              _ => panic!("badly formatted argument"),
+            }
+          }
+
+          Some(f.ident.unwrap().to_string())
+        })
         .collect(),
       _ => panic!("{}", ERR_MSG),
     },

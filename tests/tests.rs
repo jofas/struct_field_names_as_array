@@ -17,6 +17,14 @@ struct TestGenerics<A, B, C> {
   baz: C,
 }
 
+#[derive(FieldNamesAsArray)]
+struct TestSkip {
+  a: String,
+  b: String,
+  #[field_names_as_array(skip)]
+  c: String,
+}
+
 #[test]
 fn test_struct() {
   assert_eq!(Test::FIELD_NAMES_AS_ARRAY, ["f1", "f2", "f3", "f4"]);
@@ -28,4 +36,9 @@ fn test_generics_struct() {
     TestGenerics::<u8, u8, u8>::FIELD_NAMES_AS_ARRAY,
     ["foo", "bar", "baz"],
   );
+}
+
+#[test]
+fn test_skip() {
+  assert_eq!(TestSkip::FIELD_NAMES_AS_ARRAY, ["a", "b"]);
 }

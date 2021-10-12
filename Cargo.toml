@@ -1,6 +1,6 @@
 [package]
 name = "struct-field-names-as-array"
-version = "0.1.1"
+version = "0.1.2"
 authors = ["jofas <jonas@fc-web.de>"]
 edition = "2018"
 license = "MIT"
