@@ -11,7 +11,7 @@ corresponding struct.
 
 **NOTE:** the macro can only be derived by named structs.
 
-## Example
+### Example
 
 ```rust
 use struct_field_names_as_array::FieldNamesAsArray;
@@ -25,6 +25,8 @@ struct Foo {
 
 assert_eq!(Foo::FIELD_NAMES_AS_ARRAY, ["bar", "baz", "bat"]);
 ```
+
+## Attributes
 
 The `FieldNamesAsArray` macro supports the
 `field_names_as_array` attribute with the following possible
