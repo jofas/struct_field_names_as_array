@@ -6,12 +6,18 @@ use proc_macro::TokenStream;
 use quote::quote;
 use syn::punctuated::Punctuated;
 use syn::token::Comma;
-use syn::{parse_macro_input, Data, DeriveInput, Fields, AttrStyle, Meta, NestedMeta};
+use syn::{
+  parse_macro_input, AttrStyle, Data, DeriveInput, Fields, Meta,
+  NestedMeta,
+};
 
 const ERR_MSG: &str =
   "Derive(FieldNamesAsArray) only applicable to named structs";
 
-#[proc_macro_derive(FieldNamesAsArray, attributes(field_names_as_array))]
+#[proc_macro_derive(
+  FieldNamesAsArray,
+  attributes(field_names_as_array)
+)]
 pub fn derive_field_names_as_array(
   input: TokenStream,
 ) -> TokenStream {
@@ -30,7 +36,7 @@ pub fn derive_field_names_as_array(
         .filter_map(|f| {
           for attr in f.attrs.iter() {
             match attr.style {
-              AttrStyle::Outer => {},
+              AttrStyle::Outer => {}
               _ => continue,
             }
 
@@ -62,12 +68,10 @@ pub fn derive_field_names_as_array(
               .expect("argument list cannot be empty");
 
             match arg {
-              NestedMeta::Meta(m) => {
-                match m.path().get_ident() {
-                  Some(i) if i == "skip" => return None,
-                  _ => panic!("unknown argument"),
-                }
-              }
+              NestedMeta::Meta(m) => match m.path().get_ident() {
+                Some(i) if i == "skip" => return None,
+                _ => panic!("unknown argument"),
+              },
               _ => panic!("badly formatted argument"),
             }
           }
