@@ -11,7 +11,7 @@ Provides the `FieldNamesAsArray` procedural macro.
 `FieldNamesAsArray` lets you generate an array of the field names of
 a named struct.
 
-The procedural macro adds the ``FIELD_NAMES_AS_ARRAY`` constant to
+The procedural macro adds the `FIELD_NAMES_AS_ARRAY` constant to
 the struct.
 The `FIELD_NAMES_AS_ARRAY` is the array containing the field names
 of the struct.
