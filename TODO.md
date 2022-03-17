@@ -14,7 +14,7 @@
 
 * [ ] documentation for `FieldNamesAsArray`
 
-* [ ] documentation for visibility
+* [x] documentation for visibility
 
 * [x] tags (`crates.io` and github)
 

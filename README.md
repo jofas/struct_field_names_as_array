@@ -15,8 +15,6 @@ The procedural macro adds the `FIELD_NAMES_AS_ARRAY` constant to
 the struct.
 The `FIELD_NAMES_AS_ARRAY` is the array containing the field names
 of the struct.
-The visibility of the `FIELD_NAMES_AS_ARRAY` is the same as the
-corresponding struct.
 
 **Note:** the macro can only be derived by named structs.
 
@@ -36,6 +34,47 @@ struct Foo {
 }
 
 assert_eq!(Foo::FIELD_NAMES_AS_ARRAY, ["bar", "baz", "bat"]);
+```
+
+
+### Visibility
+
+The visibility of the `FIELD_NAMES_AS_ARRAY` is the same as the
+corresponding struct.
+E.g. is it `pub struct Foo { ... }`, the `FIELD_NAMES_AS_ARRAY`
+will be public as well.
+This, for example, will work:
+
+```rust
+mod foo {
+  use struct_field_names_as_array::FieldNamesAsArray;
+
+  #[derive(FieldNamesAsArray)]
+  pub(super) struct Foo {
+    bar: String,
+    baz: String,
+    bat: String,
+  }
+}
+
+assert_eq!(foo::Foo::FIELD_NAMES_AS_ARRAY, ["bar", "baz", "bat"]);
+```
+
+Whereas this will not, since `FIELD_NAMES_AS_ARRAY` is private:
+
+```compile_fail
+mod foo {
+  use struct_field_names_as_array::FieldNamesAsArray;
+
+  #[derive(FieldNamesAsArray)]
+  struct Foo {
+    bar: String,
+    baz: String,
+    bat: String,
+  }
+}
+
+assert_eq!(foo::Foo::FIELD_NAMES_AS_ARRAY, ["bar", "baz", "bat"]);
 ```
 
 
