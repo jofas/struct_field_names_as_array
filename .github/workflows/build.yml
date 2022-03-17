@@ -1,6 +1,23 @@
 name: Build
 on: [push]
 jobs:
+  Cleanup:
+    runs-on: ubuntu-latest
+    container:
+      image: rust:latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+      - name: Add cargo features
+        run: rustup component add rustfmt clippy
+      - name: Fmt
+        run: cargo fmt
+      - name: Clippy fix
+        run: cargo clippy --all-features --all-targets --fix
+      - name: Apply cleanup
+        uses: EndBug/add-and-commit@v9
+        with:
+          message: 'applying code formatting and lint fixes'
   Build:
     runs-on: ubuntu-latest
     container:
@@ -9,6 +26,10 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
+      - name: Add clippy
+        run: rustup component add clippy
+      - name: Fail build if clippy finds any error or warning
+        run: cargo clippy --all-features --all-targets -- -D warnings
       - name: Generate code coverage
         run: cargo tarpaulin --verbose --all-features --workspace --timeout 120 --out Xml
       - name: Upload to codecov.io
