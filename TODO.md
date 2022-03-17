@@ -2,16 +2,13 @@
 
 * [x] build action
 
-* [ ] runtime macros for making codecoverage available for 
-  `FieldNamesAsArray`
-
 * [x] badges
 
 * [ ] `flatten` attribute
 
 * [ ] `expand` attribute with optional seperator
 
-* [ ] attribute hierarchie
+* [ ] attribute hierarchy
 
 * [ ] example what this could be useful for (document databases)
 
