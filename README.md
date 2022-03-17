@@ -18,9 +18,12 @@ of the struct.
 The visibility of the `FIELD_NAMES_AS_ARRAY` is the same as the
 corresponding struct.
 
-**NOTE:** the macro can only be derived by named structs.
+**Note:** the macro can only be derived by named structs.
 
-### Example
+
+## Usage
+
+You can derive the `FieldNamesAsArray` macro like this:
 
 ```rust
 use struct_field_names_as_array::FieldNamesAsArray;
@@ -35,15 +38,14 @@ struct Foo {
 assert_eq!(Foo::FIELD_NAMES_AS_ARRAY, ["bar", "baz", "bat"]);
 ```
 
+
 ## Attributes
 
 The `FieldNamesAsArray` macro supports the
 `field_names_as_array` attribute with the following possible
 arguments:
 
-* `skip`: do not add the field to `FIELD_NAMES_AS_ARRAY`
-
-  **Example**
+* `skip`: do not add the field to `FIELD_NAMES_AS_ARRAY`:
 
   ```rust
   use struct_field_names_as_array::FieldNamesAsArray;
