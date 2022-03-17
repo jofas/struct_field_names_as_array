@@ -6,6 +6,7 @@ edition = "2018"
 license = "MIT"
 readme = "README.md"
 description = "Provides a procedural macro that generates an array of the field names of a named struct"
+keywords = ["macro", "proc_macro"]
 homepage = "https://github.com/jofas/struct_field_names_as_array"
 repository = "https://github.com/jofas/struct_field_names_as_array"
 
