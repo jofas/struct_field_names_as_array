@@ -5,7 +5,7 @@
 * [ ] runtime macros for making codecoverage available for 
   `FieldNamesAsArray`
 
-* [ ] badges
+* [x] badges
 
 * [ ] `flatten` attribute
 
