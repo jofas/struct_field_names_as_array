@@ -18,7 +18,7 @@
 
 * [x] tags (`crates.io` and github)
 
-* [ ] clippy action
+* [x] clippy action
 
 * [ ] release `v0.1.4`
 
