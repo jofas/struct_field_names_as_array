@@ -10,10 +10,10 @@ jobs:
         uses: actions/checkout@v2
       - name: Add cargo features
         run: rustup component add rustfmt clippy
-      - name: Fmt
-        run: cargo fmt
       - name: Clippy fix
         run: cargo clippy --all-features --all-targets --fix
+      - name: Fmt
+        run: cargo fmt
       - name: Apply cleanup
         uses: EndBug/add-and-commit@v9
         with:
