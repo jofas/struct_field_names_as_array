@@ -23,6 +23,7 @@ jobs:
     container:
       image: xd009642/tarpaulin:latest
       options: --security-opt seccomp=unconfined
+    needs: Cleanup
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
