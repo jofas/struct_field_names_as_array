@@ -18,6 +18,14 @@ of the struct.
 
 **Note:** the macro can only be derived by named structs.
 
+## Table of Contents
+
+<!-- toc -->
+* [struct-field-names-as-array](#struct-field-names-as-array)
+   * [Table of Contents](#table-of-contents)
+   * [Usage](#usage)
+   * [Attributes](#attributes)
+      * [Visibility](#visibility)
 
 ## Usage
 
