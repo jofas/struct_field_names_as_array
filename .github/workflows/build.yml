@@ -14,10 +14,15 @@ jobs:
         run: cargo clippy --all-features --all-targets --fix
       - name: Fmt
         run: cargo fmt
+      - name: Toc
+        run: |
+          curl https://raw.githubusercontent.com/ekalinin/github-markdown-toc/master/gh-md-toc -o gh-md-toc
+          chmod a+x gh-md-toc
+          ./gh-md-toc --insert --no-backup README.md
       - name: Apply cleanup
         uses: EndBug/add-and-commit@v9
         with:
-          message: 'applying code formatting and lint fixes'
+          message: 'applying code formatting, lint fixes and toc creation'
   Build:
     runs-on: ubuntu-latest
     container:
