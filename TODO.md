@@ -20,7 +20,7 @@
 
 * [x] clippy action
 
-* [ ] `tok` action
+* [x] `tok` action
 
 * [ ] release `v0.1.4`
 
