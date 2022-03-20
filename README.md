@@ -27,9 +27,6 @@ of the struct.
    * [Usage](#usage)
    * [Attributes](#attributes)
       * [Visibility](#visibility)
-
-<!-- Added by: root, at: Sun Mar 20 13:20:43 UTC 2022 -->
-
 <!--te-->
 
 
