@@ -20,6 +20,8 @@
 
 * [x] clippy action
 
+* [ ] `tok` action
+
 * [ ] release `v0.1.4`
 
 * [ ] allow access to the struct's fields via a field name

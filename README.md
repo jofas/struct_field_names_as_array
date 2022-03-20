@@ -20,12 +20,16 @@ of the struct.
 
 ## Table of Contents
 
-<!-- toc -->
+<!--ts-->
 * [struct-field-names-as-array](#struct-field-names-as-array)
    * [Table of Contents](#table-of-contents)
    * [Usage](#usage)
    * [Attributes](#attributes)
       * [Visibility](#visibility)
+
+<!-- Added by: masterusr, at: So 20. Mär 13:07:03 GMT 2022 -->
+
+<!--te-->
 
 ## Usage
 
