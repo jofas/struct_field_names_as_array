@@ -24,7 +24,7 @@ of the struct.
 <!--ts-->
    * [Usage](#usage)
    * [Attributes](#attributes)
-      * [Visibility](#visibility)
+   * [Visibility](#visibility)
 <!--te-->
 
 
