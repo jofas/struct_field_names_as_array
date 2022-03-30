@@ -22,8 +22,6 @@ of the struct.
 ## Table of Contents
 
 <!--ts-->
-* [struct-field-names-as-array](#struct-field-names-as-array)
-   * [Table of Contents](#table-of-contents)
    * [Usage](#usage)
    * [Attributes](#attributes)
       * [Visibility](#visibility)
