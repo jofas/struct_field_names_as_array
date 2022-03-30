@@ -10,7 +10,8 @@
 
 * [ ] attribute hierarchy
 
-* [ ] example what this could be useful for (document databases)
+* [ ] example what this could be useful for 
+      (document databases: es example basic, skip, nested)
 
 * [ ] documentation for `FieldNamesAsArray`
 
