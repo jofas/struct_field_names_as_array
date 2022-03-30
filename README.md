@@ -71,7 +71,7 @@ arguments:
   ```
 
 
-### Visibility
+## Visibility
 
 The visibility of the `FIELD_NAMES_AS_ARRAY` is the same as the
 corresponding struct.
