@@ -7,13 +7,25 @@ use quote::quote;
 use syn::punctuated::Punctuated;
 use syn::token::Comma;
 use syn::{
-  parse_macro_input, AttrStyle, Data, DeriveInput, Fields, Meta,
-  NestedMeta,
+  parse_macro_input, AttrStyle, Attribute, Data, DeriveInput, Fields,
+  Meta,
 };
 
 const ERR_MSG: &str =
   "Derive(FieldNamesAsArray) only applicable to named structs";
 
+mod attrs;
+
+use attrs::{ContainerAttribute, FieldAttribute, ParseAttribute};
+
+/// Derives the `FieldNamesAsArray` procedural macro.
+///
+/// # Panics
+///
+/// If the token stream is not coming from a named struct or if
+/// the `field_names_as_array` attribute is used wrongfully, deriving
+/// this macro will fail.
+///
 #[proc_macro_derive(
   FieldNamesAsArray,
   attributes(field_names_as_array)
@@ -28,55 +40,29 @@ pub fn derive_field_names_as_array(
   let (impl_generics, type_generics, where_clause) =
     &input.generics.split_for_impl();
 
+  let c_attrs = attributes::<ContainerAttribute>(&input.attrs);
+
   let field_names: Punctuated<String, Comma> = match input.data {
     Data::Struct(data_struct) => match data_struct.fields {
       Fields::Named(fields) => fields
         .named
         .into_iter()
         .filter_map(|f| {
-          for attr in f.attrs.iter() {
-            match attr.style {
-              AttrStyle::Outer => {}
-              _ => continue,
-            }
+          let attrs = attributes::<FieldAttribute>(&f.attrs);
 
-            let attr_name = attr
-              .path
-              .segments
-              .iter()
-              .last()
-              .cloned()
-              .expect("attribute is badly formatted");
-
-            if attr_name.ident != "field_names_as_array" {
-              continue;
-            }
-
-            let meta = attr
-              .parse_meta()
-              .expect("cannot parse attribute to meta");
-
-            let list = match meta {
-              Meta::List(l) => l,
-              _ => panic!("field_names_as_array needs an argument"),
-            };
-
-            let arg = list
-              .nested
-              .iter()
-              .next()
-              .expect("argument list cannot be empty");
-
-            match arg {
-              NestedMeta::Meta(m) => match m.path().get_ident() {
-                Some(i) if i == "skip" => return None,
-                _ => panic!("unknown argument"),
-              },
-              _ => panic!("badly formatted argument"),
+          if let Some(attr) = attrs.first() {
+            match attr {
+              FieldAttribute::Skip => return None,
             }
           }
 
-          Some(f.ident.unwrap().to_string())
+          let mut res = f.ident.unwrap().to_string();
+
+          for t in &c_attrs {
+            res = t.apply(&res);
+          }
+
+          Some(res)
         })
         .collect(),
       _ => panic!("{}", ERR_MSG),
@@ -93,4 +79,38 @@ pub fn derive_field_names_as_array(
   };
 
   TokenStream::from(result)
+}
+
+fn attributes<A: ParseAttribute>(attrs: &[Attribute]) -> Vec<A> {
+  let mut res = Vec::new();
+
+  for attr in attrs {
+    if attr.style != AttrStyle::Outer {
+      continue;
+    }
+
+    let attr_name = attr
+      .path
+      .segments
+      .iter()
+      .last()
+      .cloned()
+      .expect("attribute is badly formatted");
+
+    if attr_name.ident != "field_names_as_array" {
+      continue;
+    }
+
+    let meta = attr
+      .parse_meta()
+      .expect("unable to parse attribute to meta");
+
+    if let Meta::List(l) = meta {
+      for arg in l.nested {
+        res.push(A::parse(&arg));
+      }
+    }
+  }
+
+  res
 }
