@@ -1,45 +1,44 @@
 name: Build
 on: [push]
 jobs:
-  Cleanup:
+  CleanupAndTest:
     runs-on: ubuntu-latest
     container:
-      image: rust:latest
+      image: xd009642/tarpaulin:latest
+      options: --security-opt seccomp=unconfined
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v2
       - name: Add cargo features
         run: rustup component add rustfmt clippy
-      - name: Clippy fix
-        run: cargo clippy --all-features --all-targets --fix
-      - name: Fmt
-        run: cargo fmt
+      - name: Checkout repository
+        uses: actions/checkout@v3
+        with:
+          path: repo
+      - name: Fmt + clippy
+        run: |
+          cd repo
+          cargo fmt
+          cargo clippy --all-features --all-targets --fix
       - name: Toc
         run: |
           curl https://raw.githubusercontent.com/ekalinin/github-markdown-toc/master/gh-md-toc -o gh-md-toc
           chmod a+x gh-md-toc
-          ./gh-md-toc --insert --no-backup --hide-footer --skip-header README.md
+          ./gh-md-toc --insert --no-backup --hide-footer --skip-header repo/README.md
           rm gh-md-toc
       - name: Apply cleanup
         uses: EndBug/add-and-commit@v9
         with:
           message: 'applying code formatting, lint fixes and toc creation'
-  Build:
-    runs-on: ubuntu-latest
-    container:
-      image: xd009642/tarpaulin:latest
-      options: --security-opt seccomp=unconfined
-    needs: Cleanup
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v2
-      - name: Add clippy
-        run: rustup component add clippy
+          cwd: repo
       - name: Fail build if clippy finds any error or warning
-        run: cargo clippy --all-features --all-targets -- -D warnings
+        run: |
+          cd repo
+          cargo clippy --all-features --all-targets -- -D warnings
       - name: Generate code coverage
-        run: cargo tarpaulin --verbose --all-features --workspace --timeout 120 --out Xml
+        run: |
+          cd repo
+          cargo tarpaulin --verbose --all-features --workspace --timeout 120 --out Xml
       - name: Upload to codecov.io
-        uses: codecov/codecov-action@v2
+        uses: codecov/codecov-action@v3
         with:
-          fail_ci_if_error:     true
+          fail_ci_if_error: true
+          directory: repo
