@@ -8,6 +8,14 @@ pub enum ContainerAttribute {
   RenameAll(RenameAll),
 }
 
+impl ContainerAttribute {
+  pub fn apply(&self, v: &str) -> String {
+    match self {
+      Self::RenameAll(rn) => rn.apply(v),
+    }
+  }
+}
+
 impl ParseAttribute for ContainerAttribute {
   fn parse(m: &NestedMeta) -> Self {
     match m {
@@ -92,5 +100,12 @@ impl RenameAll {
     }
 
     panic!("unable to parse rename_all rule: {}", s);
+  }
+
+  fn apply(&self, v: &str) -> String {
+    match self {
+      // TODO: implement
+      _ => v.to_owned(),
+    }
   }
 }

@@ -34,8 +34,6 @@ pub fn derive_field_names_as_array(
 
   let c_attrs = attributes::<ContainerAttribute>(&input.attrs);
 
-  // TODO: apply c_attrs to field
-
   let field_names: Punctuated<String, Comma> = match input.data {
     Data::Struct(data_struct) => match data_struct.fields {
       Fields::Named(fields) => fields
@@ -50,7 +48,13 @@ pub fn derive_field_names_as_array(
             }
           }
 
-          Some(f.ident.unwrap().to_string())
+          let mut res = f.ident.unwrap().to_string();
+
+          for t in &c_attrs {
+            res = t.apply(&res);
+          }
+
+          Some(res)
         })
         .collect(),
       _ => panic!("{}", ERR_MSG),
