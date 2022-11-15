@@ -7,17 +7,12 @@
 [![Docs](https://img.shields.io/badge/docs-latest-blue.svg)](https://docs.rs/struct-field-names-as-array/latest/struct_field_names_as_array)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
 
-Provides the `FieldNamesAsArray` procedural macro.
-`FieldNamesAsArray` lets you generate an array of the field names of
-a named struct.
-
-The procedural macro adds the `FIELD_NAMES_AS_ARRAY` constant to
-the struct.
-The `FIELD_NAMES_AS_ARRAY` is the array containing the field names
-of the struct.
+Provides the `FieldNamesAsArray` procedural macro adding the
+`FIELD_NAMES_AS_ARRAY` constant to the struct the macro is dervied on.
+The `FIELD_NAMES_AS_ARRAY` contains the field names of the given 
+struct.
 
 **Note:** the macro can only be derived by named structs.
-
 
 ## Table of Contents
 
@@ -30,7 +25,6 @@ of the struct.
          * [Skip](#skip)
    * [Visibility](#visibility)
 <!--te-->
-
 
 ## Usage
 
@@ -49,7 +43,6 @@ struct Foo {
 assert_eq!(Foo::FIELD_NAMES_AS_ARRAY, ["bar", "baz", "bat"]);
 ```
 
-
 ## Attributes
 
 The `FieldNamesAsArray` macro supports the
@@ -59,7 +52,8 @@ with different arguments listed below.
 
 ### Container Attributes
 
-Container attributes can be added to the named struct struct.
+Container attributes are global attributes that change the behavior
+of the whole field names array, rather than that of a single field.
 
 #### Rename all
 
@@ -99,7 +93,6 @@ assumed that your field names follow the rust convention, that all
 field names are formatted according to the `snake_case` convention.
 If not, applying `rename_all` may result in unexpected field names.
 
-
 ### Field Attributes
 
 Field attributes can be added to the fields of a named struct.
@@ -121,7 +114,6 @@ struct Foo {
 
 assert_eq!(Foo::FIELD_NAMES_AS_ARRAY, ["bar", "baz"]);
 ```
-
 
 ## Visibility
 
