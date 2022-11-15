@@ -72,11 +72,6 @@ The following container attributes are supported:
     - `kebab-case`
     - `SCREAMING-KEBAB-CASE`
 
-  **Note:** Same as serde's implementation of `rename_all`, it is
-  assumed that your field names follow the rust convention, that all
-  field names are formatted according to the `snake_case` convention.
-  If not, applying `rename_all` may result in unexpected field names.
-  
   ```rust
   use struct_field_names_as_array::FieldNamesAsArray;
 
@@ -94,6 +89,11 @@ The following container attributes are supported:
   );
   ```
 
+  **Note:** Same as serde's implementation of `rename_all`, it is
+  assumed that your field names follow the rust convention, that all
+  field names are formatted according to the `snake_case` convention.
+  If not, applying `rename_all` may result in unexpected field names.
+  
 
 ### Field Attributes
 
