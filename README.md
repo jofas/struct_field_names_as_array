@@ -96,7 +96,8 @@ If not, applying `rename_all` may result in unexpected field names.
 
 ### Field Attributes
 
-Field attributes can be added to the fields of a named struct.
+Field attributes can be added to the fields of a named struct and 
+change the behavior of a single field.
 
 #### Skip
 
