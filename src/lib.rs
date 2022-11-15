@@ -18,6 +18,14 @@ mod attrs;
 
 use attrs::{ContainerAttribute, FieldAttribute, ParseAttribute};
 
+/// Derives the `FieldNamesAsArray` procedural macro.
+///
+/// # Panics
+///
+/// If the token stream is not coming from a named struct or if
+/// the `field_names_as_array` attribute is used wrongfully, deriving
+/// this macro will fail.
+///
 #[proc_macro_derive(
   FieldNamesAsArray,
   attributes(field_names_as_array)
@@ -42,7 +50,7 @@ pub fn derive_field_names_as_array(
         .filter_map(|f| {
           let attrs = attributes::<FieldAttribute>(&f.attrs);
 
-          for attr in attrs {
+          if let Some(attr) = attrs.first() {
             match attr {
               FieldAttribute::Skip => return None,
             }
@@ -97,13 +105,10 @@ fn attributes<A: ParseAttribute>(attrs: &[Attribute]) -> Vec<A> {
       .parse_meta()
       .expect("unable to parse attribute to meta");
 
-    match meta {
-      Meta::List(l) => {
-        for arg in l.nested {
-          res.push(A::parse(&arg));
-        }
+    if let Meta::List(l) = meta {
+      for arg in l.nested {
+        res.push(A::parse(&arg));
       }
-      _ => {}
     }
   }
 

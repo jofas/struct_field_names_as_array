@@ -70,26 +70,26 @@ impl ParseAttribute for FieldAttribute {
 
 #[derive(Clone, Copy)]
 pub enum RenameAll {
-  LowerCase,
-  UpperCase,
-  PascalCase,
-  CamelCase,
-  SnakeCase,
-  ScreamingSnakeCase,
-  KebabCase,
-  ScreamingKebabCase,
+  Lower,
+  Upper,
+  Pascal,
+  Camel,
+  Snake,
+  ScreamingSnake,
+  Kebab,
+  ScreamingKebab,
 }
 
 impl RenameAll {
   const FROM_STR: &'static [(&'static str, Self)] = &[
-    ("lowercase", Self::LowerCase),
-    ("UPPERCASE", Self::UpperCase),
-    ("PascalCase", Self::PascalCase),
-    ("camelCase", Self::CamelCase),
-    ("snake_case", Self::SnakeCase),
-    ("SCREAMING_SNAKE_CASE", Self::ScreamingSnakeCase),
-    ("kebab-case", Self::KebabCase),
-    ("SCREAMING-KEBAB-CASE", Self::ScreamingKebabCase),
+    ("lowercase", Self::Lower),
+    ("UPPERCASE", Self::Upper),
+    ("PascalCase", Self::Pascal),
+    ("camelCase", Self::Camel),
+    ("snake_case", Self::Snake),
+    ("SCREAMING_SNAKE_CASE", Self::ScreamingSnake),
+    ("kebab-case", Self::Kebab),
+    ("SCREAMING-KEBAB-CASE", Self::ScreamingKebab),
   ];
 
   fn from_str(s: &str) -> Self {
@@ -102,11 +102,11 @@ impl RenameAll {
     panic!("unable to parse rename_all rule: {}", s);
   }
 
-  fn apply(&self, v: &str) -> String {
+  fn apply(self, v: &str) -> String {
     match self {
-      Self::LowerCase | Self::SnakeCase => v.to_owned(),
-      Self::UpperCase => v.to_ascii_uppercase(),
-      Self::PascalCase => {
+      Self::Lower | Self::Snake => v.to_owned(),
+      Self::Upper | Self::ScreamingSnake => v.to_ascii_uppercase(),
+      Self::Pascal => {
         let mut pascal = String::new();
         let mut capitalize = true;
         for ch in v.chars() {
@@ -121,14 +121,13 @@ impl RenameAll {
         }
         pascal
       }
-      Self::CamelCase => {
-        let pascal = Self::PascalCase.apply(v);
+      Self::Camel => {
+        let pascal = Self::Pascal.apply(v);
         pascal[..1].to_ascii_lowercase() + &pascal[1..]
       }
-      Self::ScreamingSnakeCase => v.to_ascii_uppercase(),
-      Self::KebabCase => v.replace('_', "-"),
-      Self::ScreamingKebabCase => {
-        Self::ScreamingSnakeCase.apply(v).replace('_', "-")
+      Self::Kebab => v.replace('_', "-"),
+      Self::ScreamingKebab => {
+        Self::ScreamingSnake.apply(v).replace('_', "-")
       }
     }
   }
