@@ -49,8 +49,56 @@ assert_eq!(Foo::FIELD_NAMES_AS_ARRAY, ["bar", "baz", "bat"]);
 ## Attributes
 
 The `FieldNamesAsArray` macro supports the
-`field_names_as_array` attribute with the following possible
-arguments:
+`field_names_as_array` attribute.
+`field_names_as_array` can be applied to the container or to a field
+with different arguments listed below.
+
+### Container Attributes
+
+Container attributes can be added to the named struct struct.
+The following container attributes are supported:
+
+* `rename_all`: renames every field of the struct according to the
+  provied naming convention.
+  This attribute works exactly like the [serde][serde_rename_all]
+  equivalent.
+  Supported are these naming conventions:
+    - `lowercase`
+    - `UPPERCASE`
+    - `PascalCase`
+    - `camelCase`
+    - `snake_case`
+    - `SCREAMING_SNAKE_CASE`
+    - `kebab-case`
+    - `SCREAMING-KEBAB-CASE`
+
+  **Note:** Same as serde's implementation of `rename_all`, it is
+  assumed that your field names follow the rust convention, that all
+  field names are formatted according to the `snake_case` convention.
+  If not, applying `rename_all` may result in unexpected field names.
+  
+  ```rust
+  use struct_field_names_as_array::FieldNamesAsArray;
+
+  #[derive(FieldNamesAsArray)]
+  #[field_names_as_array(rename_all = "SCREAMING-KEBAB-CASE")]
+  struct Foo {
+    field_one: String,
+    field_two: String,
+    field_three: String,
+  }
+
+  assert_eq!(
+    Foo::FIELD_NAMES_AS_ARRAY, 
+    ["FIELD-ONE", "FIELD-TWO", "FIELD-THREE"],
+  );
+  ```
+
+
+### Field Attributes
+
+Field attributes can be added to the fields of a named struct.
+The following field attributes are supported:
 
 * `skip`: do not add the field to `FIELD_NAMES_AS_ARRAY`:
 
@@ -108,3 +156,5 @@ mod foo {
 
 assert_eq!(foo::Foo::FIELD_NAMES_AS_ARRAY, ["bar", "baz", "bat"]);
 ```
+
+[serde_rename_all]: https://serde.rs/container-attrs.html#rename_all
