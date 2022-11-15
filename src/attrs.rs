@@ -132,3 +132,51 @@ impl RenameAll {
     }
   }
 }
+
+#[cfg(test)]
+mod tests {
+  use super::RenameAll;
+
+  #[test]
+  fn rename_fields() {
+    for &(
+      original,
+      upper,
+      pascal,
+      camel,
+      screaming,
+      kebab,
+      screaming_kebab,
+    ) in &[
+      (
+        "outcome", "OUTCOME", "Outcome", "outcome", "OUTCOME",
+        "outcome", "OUTCOME",
+      ),
+      (
+        "very_tasty",
+        "VERY_TASTY",
+        "VeryTasty",
+        "veryTasty",
+        "VERY_TASTY",
+        "very-tasty",
+        "VERY-TASTY",
+      ),
+      ("a", "A", "A", "a", "A", "a", "A"),
+      ("z42", "Z42", "Z42", "z42", "Z42", "z42", "Z42"),
+    ] {
+      assert_eq!(RenameAll::Upper.apply(original), upper);
+      assert_eq!(RenameAll::Pascal.apply(original), pascal);
+      assert_eq!(RenameAll::Camel.apply(original), camel);
+      assert_eq!(RenameAll::Snake.apply(original), original);
+      assert_eq!(
+        RenameAll::ScreamingSnake.apply(original),
+        screaming
+      );
+      assert_eq!(RenameAll::Kebab.apply(original), kebab);
+      assert_eq!(
+        RenameAll::ScreamingKebab.apply(original),
+        screaming_kebab
+      );
+    }
+  }
+}
