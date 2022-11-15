@@ -4,7 +4,7 @@ jobs:
   CleanupAndTest:
     runs-on: ubuntu-latest
     container:
-      image: xd009642/tarpaulin:latest
+      image: rust:latest
       options: --security-opt seccomp=unconfined
     steps:
       - name: Add cargo features
@@ -32,13 +32,8 @@ jobs:
       - name: Fail build if clippy finds any error or warning
         run: |
           cd repo
-          cargo clippy --all-features --all-targets -- -D warnings
-      - name: Generate code coverage
+          cargo clippy --all-features --all-targets -- -D warnings -D clippy::pedantic
+      - name: Run test suite
         run: |
           cd repo
-          cargo tarpaulin --verbose --all-features --workspace --timeout 120 --out Xml
-      - name: Upload to codecov.io
-        uses: codecov/codecov-action@v3
-        with:
-          fail_ci_if_error: true
-          directory: repo
+          cargo test
