@@ -90,8 +90,8 @@ assert_eq!(
 ```
 
 **Note:** Same as serde's implementation of `rename_all`, it is
-assumed that your field names follow the rust convention, that all
-field names are formatted according to the `snake_case` convention.
+assumed that your field names follow the rust naming convention, that 
+all field names must be given in `snake_case`.
 If not, applying `rename_all` may result in unexpected field names.
 
 ### Field Attributes
