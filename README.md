@@ -7,8 +7,9 @@
 [![Docs](https://img.shields.io/badge/docs-latest-blue.svg)](https://docs.rs/struct-field-names-as-array/latest/struct_field_names_as_array)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
 
-Provides the `FieldNamesAsArray` procedural macro adding the
-`FIELD_NAMES_AS_ARRAY` constant to the struct the macro is dervied on.
+Provides the `FieldNamesAsArray` procedural macro.
+The macro adds the `FIELD_NAMES_AS_ARRAY` constant to the struct the
+macro is dervied on.
 The `FIELD_NAMES_AS_ARRAY` contains the field names of the given 
 struct.
 
