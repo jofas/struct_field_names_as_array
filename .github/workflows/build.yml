@@ -4,7 +4,7 @@ jobs:
   CleanupAndTest:
     runs-on: ubuntu-latest
     container:
-      image: xd009642/tarpaulin:latest
+      image: rust:latest
       options: --security-opt seccomp=unconfined
     steps:
       - name: Add cargo features
@@ -33,6 +33,23 @@ jobs:
         run: |
           cd repo
           cargo clippy --all-features --all-targets -- -D warnings -D clippy::pedantic
+      - name: Run test suite
+        run: |
+          cd repo
+          cargo test
+---
+name: Codecov
+on: 
+  push:
+    branches:
+      - master
+jobs:
+  CleanupAndTest:
+    runs-on: ubuntu-latest
+    container:
+      image: xd009642/tarpaulin:latest
+      options: --security-opt seccomp=unconfined
+    steps:
       - name: Generate code coverage
         run: |
           cd repo
