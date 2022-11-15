@@ -1,0 +1,21 @@
+name: Codecov
+on: 
+  push:
+    branches:
+      - master
+jobs:
+  CleanupAndTest:
+    runs-on: ubuntu-latest
+    container:
+      image: xd009642/tarpaulin:latest
+      options: --security-opt seccomp=unconfined
+    steps:
+      - name: Generate code coverage
+        run: |
+          cd repo
+          cargo tarpaulin --verbose --all-features --workspace --timeout 120 --out Xml
+      - name: Upload to codecov.io
+        uses: codecov/codecov-action@v3
+        with:
+          fail_ci_if_error: true
+          directory: repo
