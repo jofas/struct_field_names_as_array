@@ -10,6 +10,10 @@ jobs:
       image: xd009642/tarpaulin:latest
       options: --security-opt seccomp=unconfined
     steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+        with:
+          path: repo
       - name: Generate code coverage
         run: |
           cd repo
