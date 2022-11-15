@@ -104,8 +104,32 @@ impl RenameAll {
 
   fn apply(&self, v: &str) -> String {
     match self {
-      // TODO: implement
-      _ => v.to_owned(),
+      Self::LowerCase | Self::SnakeCase => v.to_owned(),
+      Self::UpperCase => v.to_ascii_uppercase(),
+      Self::PascalCase => {
+        let mut pascal = String::new();
+        let mut capitalize = true;
+        for ch in v.chars() {
+          if ch == '_' {
+            capitalize = true;
+          } else if capitalize {
+            pascal.push(ch.to_ascii_uppercase());
+            capitalize = false;
+          } else {
+            pascal.push(ch);
+          }
+        }
+        pascal
+      }
+      Self::CamelCase => {
+        let pascal = Self::PascalCase.apply(v);
+        pascal[..1].to_ascii_lowercase() + &pascal[1..]
+      }
+      Self::ScreamingSnakeCase => v.to_ascii_uppercase(),
+      Self::KebabCase => v.replace('_', "-"),
+      Self::ScreamingKebabCase => {
+        Self::ScreamingSnakeCase.apply(v).replace('_', "-")
+      }
     }
   }
 }
