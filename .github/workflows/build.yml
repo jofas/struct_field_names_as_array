@@ -32,7 +32,7 @@ jobs:
       - name: Fail build if clippy finds any error or warning
         run: |
           cd repo
-          cargo clippy --all-features --all-targets -- -D warnings
+          cargo clippy --all-features --all-targets -- -D warnings -D clippy::pedantic
       - name: Generate code coverage
         run: |
           cd repo
