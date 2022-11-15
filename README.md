@@ -24,6 +24,10 @@ of the struct.
 <!--ts-->
    * [Usage](#usage)
    * [Attributes](#attributes)
+      * [Container Attributes](#container-attributes)
+         * [Rename all](#rename-all)
+      * [Field Attributes](#field-attributes)
+         * [Skip](#skip)
    * [Visibility](#visibility)
 <!--te-->
 
