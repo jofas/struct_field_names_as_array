@@ -13,7 +13,7 @@ macro is dervied on.
 The `FIELD_NAMES_AS_ARRAY` contains the field names of the given 
 struct.
 
-**Note:** the macro can only be derived by named structs.
+**Note:** The macro can only be derived by named structs.
 
 ## Table of Contents
 
