@@ -1,5 +1,5 @@
 name: Codecov
-on: 
+on:
   push:
     branches:
       - master
@@ -12,14 +12,9 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
-        with:
-          path: repo
       - name: Generate code coverage
-        run: |
-          cd repo
-          cargo tarpaulin --verbose --all-features --workspace --timeout 120 --out Xml
+        run: cargo tarpaulin --verbose --all-features --workspace --timeout 120 --out Xml
       - name: Upload to codecov.io
         uses: codecov/codecov-action@v3
         with:
           fail_ci_if_error: true
-          directory: repo
