@@ -3,10 +3,10 @@
 use struct_field_names_as_array::FieldNamesAsArray;
 
 const CONCAT_STR: &str = {
-  const foo: &str = "foo";
-  const bar: &str = "bar";
+  const FOO: &str = "foo";
+  const BAR: &str = "bar";
 
-  const_format::concatcp!(foo, ".", bar)
+  const_format::concatcp!(FOO, ".", BAR)
 };
 
 #[test]
