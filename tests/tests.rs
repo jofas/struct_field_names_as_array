@@ -2,6 +2,18 @@
 
 use struct_field_names_as_array::FieldNamesAsArray;
 
+const CONCAT_STR: &str = {
+  const foo: &str = "foo";
+  const bar: &str = "bar";
+
+  const_format::concatcp!(foo, ".", bar)
+};
+
+#[test]
+fn test_concat_str() {
+  assert_eq!(CONCAT_STR, "foo.bar");
+}
+
 #[derive(FieldNamesAsArray)]
 struct Test {
   f1: String,
