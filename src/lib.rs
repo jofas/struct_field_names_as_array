@@ -4,11 +4,8 @@ extern crate proc_macro;
 use proc_macro::TokenStream;
 
 use quote::quote;
-use syn::punctuated::Punctuated;
-use syn::token::Comma;
 use syn::{
-  parse_macro_input, AttrStyle, Attribute, Data, DeriveInput, Fields,
-  Meta,
+  parse_macro_input, Data, DeriveInput, Fields as SynFields,
 };
 
 const ERR_MSG: &str =
@@ -16,9 +13,11 @@ const ERR_MSG: &str =
 
 mod attrs;
 
-use attrs::{ContainerAttribute, FieldAttribute, ParseAttribute};
+use attrs::{
+  Attributes, ContainerAttribute, Field, FieldAttribute, Fields,
+};
 
-/// Derives the `FieldNamesAsArray` procedural macro.
+/// `FieldNamesAsArray` procedural macro.
 ///
 /// # Panics
 ///
@@ -40,77 +39,36 @@ pub fn derive_field_names_as_array(
   let (impl_generics, type_generics, where_clause) =
     &input.generics.split_for_impl();
 
-  let c_attrs = attributes::<ContainerAttribute>(&input.attrs);
+  let ca = Attributes::<ContainerAttribute>::new(&input.attrs);
 
-  let field_names: Punctuated<String, Comma> = match input.data {
+  let fields = Fields(match input.data {
     Data::Struct(data_struct) => match data_struct.fields {
-      Fields::Named(fields) => fields
-        .named
-        .into_iter()
-        .filter_map(|f| {
-          let attrs = attributes::<FieldAttribute>(&f.attrs);
+      SynFields::Named(fields) => {
+        let mut res = Vec::new();
 
-          if let Some(attr) = attrs.first() {
-            match attr {
-              FieldAttribute::Skip => return None,
-            }
-          }
+        for f in fields.named {
+          let fa = Attributes::<FieldAttribute>::new(&f.attrs);
 
-          let mut res = f.ident.unwrap().to_string();
+          let field =
+            Field::new(f.ident.unwrap().to_string(), &ca, &fa);
 
-          for t in &c_attrs {
-            res = t.apply(&res);
-          }
+          res.push(field);
+        }
 
-          Some(res)
-        })
-        .collect(),
+        res
+      }
       _ => panic!("{}", ERR_MSG),
     },
     _ => panic!("{}", ERR_MSG),
-  };
+  });
 
-  let result = quote! {
+  let array_len = fields.array_len_tokens();
+  let array = fields.array_tokens();
+
+  quote! {
     impl #impl_generics #name #type_generics #where_clause {
       #[doc=concat!("Generated array of field names for `", stringify!(#name #type_generics), "`.")]
-      #vis const FIELD_NAMES_AS_ARRAY: &'static [&'static str] =
-        &[#field_names];
+      #vis const FIELD_NAMES_AS_ARRAY: [&'static str; #array_len] = #array;
     }
-  };
-
-  TokenStream::from(result)
-}
-
-fn attributes<A: ParseAttribute>(attrs: &[Attribute]) -> Vec<A> {
-  let mut res = Vec::new();
-
-  for attr in attrs {
-    if attr.style != AttrStyle::Outer {
-      continue;
-    }
-
-    let attr_name = attr
-      .path
-      .segments
-      .iter()
-      .last()
-      .cloned()
-      .expect("attribute is badly formatted");
-
-    if attr_name.ident != "field_names_as_array" {
-      continue;
-    }
-
-    let meta = attr
-      .parse_meta()
-      .expect("unable to parse attribute to meta");
-
-    if let Meta::List(l) = meta {
-      for arg in l.nested {
-        res.push(A::parse(&arg));
-      }
-    }
-  }
-
-  res
+  }.into()
 }

@@ -1,9 +1,8 @@
-#![allow(dead_code)]
-
 use struct_field_names_as_array::FieldNamesAsArray;
 
 #[derive(FieldNamesAsArray)]
 #[field_names_as_array(rename_all = "lowercase")]
+#[allow(dead_code)]
 struct RenameLowercase {
   field_one: bool,
   field_two: bool,
@@ -20,6 +19,7 @@ fn test_rename_lowercase() {
 
 #[derive(FieldNamesAsArray)]
 #[field_names_as_array(rename_all = "UPPERCASE")]
+#[allow(dead_code)]
 struct RenameUppercase {
   field_one: bool,
   field_two: bool,
@@ -36,6 +36,7 @@ fn test_rename_uppercase() {
 
 #[derive(FieldNamesAsArray)]
 #[field_names_as_array(rename_all = "PascalCase")]
+#[allow(dead_code)]
 struct RenamePascalCase {
   field_one: bool,
   field_two: bool,
@@ -52,6 +53,7 @@ fn test_rename_pascal_case() {
 
 #[derive(FieldNamesAsArray)]
 #[field_names_as_array(rename_all = "camelCase")]
+#[allow(dead_code)]
 struct RenameCamelCase {
   field_one: bool,
   field_two: bool,
@@ -68,6 +70,7 @@ fn test_rename_camel_case() {
 
 #[derive(FieldNamesAsArray)]
 #[field_names_as_array(rename_all = "snake_case")]
+#[allow(dead_code)]
 struct RenameSnakeCase {
   field_one: bool,
   field_two: bool,
@@ -84,6 +87,7 @@ fn test_rename_snake_case() {
 
 #[derive(FieldNamesAsArray)]
 #[field_names_as_array(rename_all = "SCREAMING_SNAKE_CASE")]
+#[allow(dead_code)]
 struct RenameScreamingSnakeCase {
   field_one: bool,
   field_two: bool,
@@ -100,6 +104,7 @@ fn test_rename_screaming_snake_case() {
 
 #[derive(FieldNamesAsArray)]
 #[field_names_as_array(rename_all = "kebab-case")]
+#[allow(dead_code)]
 struct RenameKebabCase {
   field_one: bool,
   field_two: bool,
@@ -116,6 +121,7 @@ fn test_rename_kebab_case() {
 
 #[derive(FieldNamesAsArray)]
 #[field_names_as_array(rename_all = "SCREAMING-KEBAB-CASE")]
+#[allow(dead_code)]
 struct RenameScreamingKebabCase {
   field_one: bool,
   field_two: bool,

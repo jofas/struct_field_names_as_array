@@ -1,71 +1,162 @@
-use syn::{Lit, Meta, NestedMeta};
+use syn::{AttrStyle, Attribute as SynAttribute};
 
-pub trait ParseAttribute {
-  fn parse(m: &NestedMeta) -> Self;
+use quote::quote;
+
+use proc_macro2::TokenStream;
+
+use darling::error::Error;
+use darling::util::Override;
+use darling::FromMeta;
+
+use std::str::FromStr;
+
+pub struct Fields(pub Vec<Field>);
+
+impl Fields {
+  pub fn array_tokens(&self) -> TokenStream {
+    // TODO: formatting logic into field
+
+    let raw = self.0.iter().fold(String::new(), |acc, x| {
+      if x.skip {
+        acc
+      } else if let Some(f) = &x.flatten {
+        match &f.delim {
+          Some(d) => format!("{acc}\"{}{d}TODO\",", x.name),
+          None => format!("{acc}\"{}.TODO\",", x.name),
+        }
+      } else {
+        format!("{acc}\"{}\",", x.name)
+      }
+    });
+
+    let inner = TokenStream::from_str(&raw).unwrap();
+
+    quote! {
+      [#inner]
+    }
+  }
+
+  pub fn array_len_tokens(&self) -> TokenStream {
+    // TODO: formatting logic into field
+
+    let raw = self.0.iter().fold(String::new(), |acc, x| {
+      if x.skip {
+        acc
+      } else if acc.is_empty() {
+        String::from("1")
+      } else {
+        format!("{acc} + 1")
+      }
+    });
+
+    let inner = TokenStream::from_str(&raw).unwrap();
+
+    quote! {
+      (#inner)
+    }
+  }
 }
 
-pub enum ContainerAttribute {
-  RenameAll(RenameAll),
+pub struct Field {
+  name: String,
+  skip: bool,
+  flatten: Option<Flatten>,
+}
+
+impl Field {
+  pub fn new<S: AsRef<str>>(
+    name: S,
+    container_attrs: &Attributes<ContainerAttribute>,
+    field_attrs: &Attributes<FieldAttribute>,
+  ) -> Self {
+    let mut name = name.as_ref().to_owned();
+    let mut skip = false;
+    let mut flatten = None;
+
+    for ca in container_attrs.iter() {
+      name = ca.rename_all(name);
+    }
+
+    for fa in field_attrs.iter() {
+      if fa.skip {
+        skip = true;
+      }
+
+      if let Some(f) = &fa.flatten {
+        flatten = Some(f.clone().unwrap_or_default());
+      }
+    }
+
+    Self {
+      name,
+      skip,
+      flatten,
+    }
+  }
+}
+
+pub struct Attributes<T> {
+  inner: Vec<T>,
+}
+
+impl<T> Attributes<T> {
+  fn iter(&self) -> impl Iterator<Item = &T> {
+    self.inner.iter()
+  }
+}
+
+impl<T: FromMeta> Attributes<T> {
+  pub fn new(attrs: &[SynAttribute]) -> Self {
+    let mut inner = Vec::new();
+
+    for attr in attrs {
+      if attr.style != AttrStyle::Outer {
+        continue;
+      }
+
+      let attr_name = attr
+        .path
+        .segments
+        .iter()
+        .last()
+        .cloned()
+        .expect("attribute is badly formatted");
+
+      if attr_name.ident != "field_names_as_array" {
+        continue;
+      }
+
+      let meta = attr
+        .parse_meta()
+        .expect("unable to parse attribute to meta");
+
+      inner.push(
+        T::from_meta(&meta)
+          .expect("unable to parse container attribute"),
+      );
+    }
+
+    Self { inner }
+  }
+}
+
+#[derive(FromMeta)]
+pub struct ContainerAttribute {
+  rename_all: RenameAll,
 }
 
 impl ContainerAttribute {
-  pub fn apply(&self, v: &str) -> String {
-    match self {
-      Self::RenameAll(rn) => rn.apply(v),
-    }
+  fn rename_all<S: AsRef<str>>(&self, name: S) -> String {
+    self.rename_all.apply(name)
   }
 }
 
-impl ParseAttribute for ContainerAttribute {
-  fn parse(m: &NestedMeta) -> Self {
-    match m {
-      NestedMeta::Meta(m) => {
-        let ident = m.path().get_ident();
-
-        match ident {
-          Some(i) if i == "skip" => {
-            panic!(
-              "skip is a field attribute, not a container attribute"
-            );
-          }
-          Some(i) if i == "rename_all" => match m {
-            Meta::NameValue(mnv) => match &mnv.lit {
-              Lit::Str(ls) => {
-                Self::RenameAll(RenameAll::from_str(&ls.value()))
-              }
-              _ => panic!(
-                "attribute rename_all expects a string as value"
-              ),
-            },
-            _ => panic!("attribute rename_all badly formatted"),
-          },
-          _ => panic!("unknown attribute"),
-        }
-      }
-      NestedMeta::Lit(_) => panic!("unable to parse attribute"),
-    }
-  }
-}
-
-pub enum FieldAttribute {
-  Skip,
-}
-
-impl ParseAttribute for FieldAttribute {
-  fn parse(m: &NestedMeta) -> Self {
-    match m {
-      NestedMeta::Meta(m) => match m.path().get_ident() {
-        Some(i) if i == "skip" => Self::Skip,
-        Some(i) if i == "rename_all" => {
-          panic!(
-            "rename_all is a container attribute, not a field attribute"
-          );
-        }
-        _ => panic!("unknown attribute"),
-      },
-      NestedMeta::Lit(_) => panic!("unable to parse attribute"),
-    }
-  }
+#[derive(FromMeta)]
+pub struct FieldAttribute {
+  #[darling(default)]
+  skip: bool,
+  #[darling(default)]
+  flatten: Option<Override<Flatten>>,
 }
 
 #[derive(Clone, Copy)]
@@ -80,6 +171,18 @@ pub enum RenameAll {
   ScreamingKebab,
 }
 
+impl FromMeta for RenameAll {
+  fn from_string(value: &str) -> Result<Self, Error> {
+    for (v, r) in Self::FROM_STR {
+      if v == &value {
+        return Ok(*r);
+      }
+    }
+
+    Err(Error::unknown_value(value))
+  }
+}
+
 impl RenameAll {
   const FROM_STR: &'static [(&'static str, Self)] = &[
     ("lowercase", Self::Lower),
@@ -92,24 +195,17 @@ impl RenameAll {
     ("SCREAMING-KEBAB-CASE", Self::ScreamingKebab),
   ];
 
-  fn from_str(s: &str) -> Self {
-    for (v, r) in Self::FROM_STR {
-      if v == &s {
-        return *r;
-      }
-    }
+  fn apply<S: AsRef<str>>(self, name: S) -> String {
+    let name = name.as_ref();
 
-    panic!("unable to parse rename_all rule: {}", s);
-  }
-
-  fn apply(self, v: &str) -> String {
     match self {
-      Self::Lower | Self::Snake => v.to_owned(),
-      Self::Upper | Self::ScreamingSnake => v.to_ascii_uppercase(),
+      Self::Lower | Self::Snake => name.to_owned(),
+      Self::Upper | Self::ScreamingSnake => name.to_ascii_uppercase(),
       Self::Pascal => {
         let mut pascal = String::new();
         let mut capitalize = true;
-        for ch in v.chars() {
+
+        for ch in name.chars() {
           if ch == '_' {
             capitalize = true;
           } else if capitalize {
@@ -119,18 +215,25 @@ impl RenameAll {
             pascal.push(ch);
           }
         }
+
         pascal
       }
       Self::Camel => {
-        let pascal = Self::Pascal.apply(v);
+        let pascal = Self::Pascal.apply(name);
         pascal[..1].to_ascii_lowercase() + &pascal[1..]
       }
-      Self::Kebab => v.replace('_', "-"),
+      Self::Kebab => name.replace('_', "-"),
       Self::ScreamingKebab => {
-        Self::ScreamingSnake.apply(v).replace('_', "-")
+        Self::ScreamingSnake.apply(name).replace('_', "-")
       }
     }
   }
+}
+
+#[derive(Default, Debug, FromMeta, Clone)]
+#[darling(default)]
+pub struct Flatten {
+  delim: Option<String>,
 }
 
 #[cfg(test)]
