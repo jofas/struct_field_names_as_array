@@ -1,23 +1,5 @@
-[package]
-name = "struct-field-names-as-array"
-version = "0.1.4"
-authors = ["jofas <jonas@fc-web.de>"]
-edition = "2018"
-license = "MIT"
-readme = "README.md"
-description = "Provides a procedural macro that generates an array of the field names of a named struct"
-keywords = ["macro", "proc_macro"]
-homepage = "https://github.com/jofas/struct_field_names_as_array"
-repository = "https://github.com/jofas/struct_field_names_as_array"
-
-# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
-
-[lib]
-proc-macro = true
-
-[dependencies]
-syn = { version = "^1.0.80", features = ["derive", "printing", "extra-traits"] }
-quote = "^1.0.10"
-proc-macro2 = "^1.0.29"
-darling = "^0.14.2"
-const_format = "^0.2.30"
+[workspace]
+members = [
+  "struct-field-names-as-array-derive",
+  "struct-field-names-as-array",
+]
