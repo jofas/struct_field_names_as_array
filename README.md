@@ -9,7 +9,7 @@
 
 Provides the `FieldNamesAsArray` procedural macro.
 The macro adds the `FIELD_NAMES_AS_ARRAY` constant to the struct the
-macro is dervied on.
+macro is derived on.
 The `FIELD_NAMES_AS_ARRAY` contains the field names of the given 
 struct.
 
