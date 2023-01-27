@@ -4,7 +4,7 @@ version = "0.2.0"
 edition = "2021"
 license = "MIT"
 readme = "README.md"
-description = "Provides a procedural macro that generates an array of the field names of a named struct"
+description = "Implementation of the FieldNamesAsArray macro from the struct-field-names-as-array crate"
 keywords = ["macro", "proc_macro"]
 repository = "https://github.com/jofas/struct_field_names_as_array"
 
