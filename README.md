@@ -36,9 +36,9 @@ use struct_field_names_as_array::FieldNamesAsArray;
 
 #[derive(FieldNamesAsArray)]
 struct Foo {
-  bar: String,
-  baz: String,
-  bat: String,
+    bar: String,
+    baz: String,
+    bat: String,
 }
 
 assert_eq!(Foo::FIELD_NAMES_AS_ARRAY, ["bar", "baz", "bat"]);
@@ -78,9 +78,9 @@ use struct_field_names_as_array::FieldNamesAsArray;
 #[derive(FieldNamesAsArray)]
 #[field_names_as_array(rename_all = "SCREAMING-KEBAB-CASE")]
 struct Foo {
-  field_one: String,
-  field_two: String,
-  field_three: String,
+    field_one: String,
+    field_two: String,
+    field_three: String,
 }
 
 assert_eq!(
@@ -108,10 +108,10 @@ use struct_field_names_as_array::FieldNamesAsArray;
 
 #[derive(FieldNamesAsArray)]
 struct Foo {
-  bar: String,
-  baz: String,
-  #[field_names_as_array(skip)]
-  bat: String,
+    bar: String,
+    baz: String,
+    #[field_names_as_array(skip)]
+    bat: String,
 }
 
 assert_eq!(Foo::FIELD_NAMES_AS_ARRAY, ["bar", "baz"]);
@@ -127,14 +127,14 @@ This, for example, will work:
 
 ```rust
 mod foo {
-  use struct_field_names_as_array::FieldNamesAsArray;
+    use struct_field_names_as_array::FieldNamesAsArray;
 
-  #[derive(FieldNamesAsArray)]
-  pub(super) struct Foo {
-    bar: String,
-    baz: String,
-    bat: String,
-  }
+    #[derive(FieldNamesAsArray)]
+    pub(super) struct Foo {
+        bar: String,
+        baz: String,
+        bat: String,
+    }
 }
 
 assert_eq!(foo::Foo::FIELD_NAMES_AS_ARRAY, ["bar", "baz", "bat"]);
@@ -144,14 +144,14 @@ Whereas this will not, since `FIELD_NAMES_AS_ARRAY` is private:
 
 ```compile_fail
 mod foo {
-  use struct_field_names_as_array::FieldNamesAsArray;
+    use struct_field_names_as_array::FieldNamesAsArray;
 
-  #[derive(FieldNamesAsArray)]
-  struct Foo {
-    bar: String,
-    baz: String,
-    bat: String,
-  }
+    #[derive(FieldNamesAsArray)]
+    struct Foo {
+        bar: String,
+        baz: String,
+        bat: String,
+    }
 }
 
 assert_eq!(foo::Foo::FIELD_NAMES_AS_ARRAY, ["bar", "baz", "bat"]);
