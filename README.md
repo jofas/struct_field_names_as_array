@@ -130,6 +130,7 @@ mod foo {
     use struct_field_names_as_array::FieldNamesAsArray;
 
     #[derive(FieldNamesAsArray)]
+    #[field_names_as_array(visibility = "pub(super)")]
     pub(super) struct Foo {
         bar: String,
         baz: String,

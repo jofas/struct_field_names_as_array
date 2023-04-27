@@ -1,4 +1,4 @@
-use syn::{Lit, Meta, NestedMeta};
+use syn::{parse_str, Lit, Meta, NestedMeta, Visibility};
 
 pub trait ParseAttribute {
     fn parse(m: &NestedMeta) -> Self;
@@ -6,12 +6,14 @@ pub trait ParseAttribute {
 
 pub enum ContainerAttribute {
     RenameAll(RenameAll),
+    Visibility(Visibility),
 }
 
 impl ContainerAttribute {
     pub fn apply(&self, v: &str) -> String {
         match self {
             Self::RenameAll(rn) => rn.apply(v),
+            Self::Visibility(_) => v.to_owned(),
         }
     }
 }
@@ -33,6 +35,13 @@ impl ParseAttribute for ContainerAttribute {
                         },
                         _ => panic!("attribute rename_all badly formatted"),
                     },
+                    Some(i) if i == "visibility" => match m {
+                        Meta::NameValue(mnv) => match &mnv.lit {
+                            Lit::Str(ls) => Self::Visibility(parse_str(&ls.value()).expect("attribute visibility expects the input string to be a valid visiblity")),
+                            _ => panic!("attribute visibility expects a string as value"),
+                        },
+                        _ => panic!("attribute visibility badly formatted"),
+                    },
                     _ => panic!("unknown attribute"),
                 }
             }
@@ -52,6 +61,9 @@ impl ParseAttribute for FieldAttribute {
                 Some(i) if i == "skip" => Self::Skip,
                 Some(i) if i == "rename_all" => {
                     panic!("rename_all is a container attribute, not a field attribute");
+                }
+                Some(i) if i == "visibility" => {
+                    panic!("visiblity is a container attribute, not a field attribute");
                 }
                 _ => panic!("unknown attribute"),
             },
