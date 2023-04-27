@@ -6,7 +6,7 @@ use proc_macro::TokenStream;
 use quote::quote;
 use syn::punctuated::Punctuated;
 use syn::token::Comma;
-use syn::{parse_macro_input, AttrStyle, Attribute, Data, DeriveInput, Fields, Meta};
+use syn::{parse_macro_input, AttrStyle, Attribute, Data, DeriveInput, Fields, Meta, Visibility};
 
 const ERR_MSG: &str = "Derive(FieldNamesAsArray) only applicable to named structs";
 
@@ -42,7 +42,6 @@ pub fn derive_field_names_as_array(input: TokenStream) -> TokenStream {
     let input = parse_macro_input!(input as DeriveInput);
 
     let name = &input.ident;
-    let vis = &input.vis;
     let (impl_generics, type_generics, where_clause) = &input.generics.split_for_impl();
 
     let c_attrs = attributes::<ContainerAttribute>(&input.attrs);
@@ -76,6 +75,15 @@ pub fn derive_field_names_as_array(input: TokenStream) -> TokenStream {
     };
 
     let len = field_names.len();
+
+    let vis = c_attrs
+        .into_iter()
+        .rev()
+        .find_map(|a| match a {
+            ContainerAttribute::Visibility(v) => Some(v),
+            _ => None,
+        })
+        .unwrap_or(Visibility::Inherited);
 
     let result = quote! {
       impl #impl_generics #name #type_generics #where_clause {

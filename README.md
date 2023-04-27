@@ -22,9 +22,9 @@ struct.
    * [Attributes](#attributes)
       * [Container Attributes](#container-attributes)
          * [Rename all](#rename-all)
+         * [Visibility](#visibility)
       * [Field Attributes](#field-attributes)
          * [Skip](#skip)
-   * [Visibility](#visibility)
 <!--te-->
 
 ## Usage
@@ -90,9 +90,33 @@ assert_eq!(
 ```
 
 **Note:** Same as serde's implementation of `rename_all`, it is
-assumed that your field names follow the rust naming convention, that 
-all field names must be given in `snake_case`.
-If not, applying `rename_all` may result in unexpected field names.
+assumed that your field names follow the rust naming convention.
+Namely, all field names must be given in `snake_case`.
+If you don't follow this convention, applying `rename_all` may result in 
+unexpected field names.
+
+#### Visibility
+
+Per default, `FIELD_NAMES_AS_ARRAY` is a private member of the struct. 
+If you want to change the visibility of `FIELD_NAMES_AS_ARRAY`, you can use the 
+`visibility` attribute, providing it with a valid 
+[visibility](https://doc.rust-lang.org/reference/visibility-and-privacy.html):
+
+```rust
+mod foo {
+    use struct_field_names_as_array::FieldNamesAsArray;
+
+    #[derive(FieldNamesAsArray)]
+    #[field_names_as_array(visibility = "pub(super)")]
+    pub(super) struct Foo {
+        bar: String,
+        baz: String,
+        bat: String,
+    }
+}
+
+assert_eq!(foo::Foo::FIELD_NAMES_AS_ARRAY, ["bar", "baz", "bat"]);
+```
 
 ### Field Attributes
 
@@ -115,46 +139,6 @@ struct Foo {
 }
 
 assert_eq!(Foo::FIELD_NAMES_AS_ARRAY, ["bar", "baz"]);
-```
-
-## Visibility
-
-The visibility of the `FIELD_NAMES_AS_ARRAY` is the same as the
-corresponding struct.
-E.g. is it `pub struct Foo { ... }`, the `FIELD_NAMES_AS_ARRAY`
-will be public as well.
-This, for example, will work:
-
-```rust
-mod foo {
-    use struct_field_names_as_array::FieldNamesAsArray;
-
-    #[derive(FieldNamesAsArray)]
-    pub(super) struct Foo {
-        bar: String,
-        baz: String,
-        bat: String,
-    }
-}
-
-assert_eq!(foo::Foo::FIELD_NAMES_AS_ARRAY, ["bar", "baz", "bat"]);
-```
-
-Whereas this will not, since `FIELD_NAMES_AS_ARRAY` is private:
-
-```compile_fail
-mod foo {
-    use struct_field_names_as_array::FieldNamesAsArray;
-
-    #[derive(FieldNamesAsArray)]
-    struct Foo {
-        bar: String,
-        baz: String,
-        bat: String,
-    }
-}
-
-assert_eq!(foo::Foo::FIELD_NAMES_AS_ARRAY, ["bar", "baz", "bat"]);
 ```
 
 [serde_rename_all]: https://serde.rs/container-attrs.html#rename_all
