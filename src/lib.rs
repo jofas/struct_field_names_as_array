@@ -85,9 +85,6 @@ pub fn derive_field_names_as_array(input: TokenStream) -> TokenStream {
         })
         .unwrap_or(Visibility::Inherited);
 
-    // TODO: test vis
-    // TODO: update documentation
-
     let result = quote! {
       impl #impl_generics #name #type_generics #where_clause {
         #[doc=concat!("Generated array of field names for `", stringify!(#name #type_generics), "`.")]

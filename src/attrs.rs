@@ -4,6 +4,7 @@ pub trait ParseAttribute {
     fn parse(m: &NestedMeta) -> Self;
 }
 
+#[non_exhaustive]
 pub enum ContainerAttribute {
     RenameAll(RenameAll),
     Visibility(Visibility),

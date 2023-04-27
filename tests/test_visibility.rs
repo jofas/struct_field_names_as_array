@@ -5,7 +5,7 @@ mod test {
 
     #[derive(FieldNamesAsArray)]
     #[field_names_as_array(visibility = "pub")]
-    pub struct TestPub {
+    pub struct Pub {
         f1: String,
         f2: i64,
         f3: String,
@@ -13,7 +13,7 @@ mod test {
     }
     #[derive(FieldNamesAsArray)]
     #[field_names_as_array(visibility = "pub(super)")]
-    pub struct TestPubSuper {
+    pub struct PubSuper {
         f1: String,
         f2: i64,
         f3: String,
@@ -22,7 +22,7 @@ mod test {
 
     #[derive(FieldNamesAsArray)]
     #[field_names_as_array(visibility = "pub(crate)")]
-    pub struct TestPubCrate {
+    pub struct PubCrate {
         f1: String,
         f2: i64,
         f3: String,
@@ -32,16 +32,13 @@ mod test {
 
 #[test]
 fn test_visibility() {
+    assert_eq!(test::Pub::FIELD_NAMES_AS_ARRAY, ["f1", "f2", "f3", "f4"]);
     assert_eq!(
-        test::TestPub::FIELD_NAMES_AS_ARRAY,
+        test::PubSuper::FIELD_NAMES_AS_ARRAY,
         ["f1", "f2", "f3", "f4"]
     );
     assert_eq!(
-        test::TestPubSuper::FIELD_NAMES_AS_ARRAY,
-        ["f1", "f2", "f3", "f4"]
-    );
-    assert_eq!(
-        test::TestPubCrate::FIELD_NAMES_AS_ARRAY,
+        test::PubCrate::FIELD_NAMES_AS_ARRAY,
         ["f1", "f2", "f3", "f4"]
     );
 }
