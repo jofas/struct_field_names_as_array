@@ -75,11 +75,12 @@ pub fn derive_field_names_as_array(input: TokenStream) -> TokenStream {
         _ => panic!("{}", ERR_MSG),
     };
 
+    let len = field_names.len();
+
     let result = quote! {
       impl #impl_generics #name #type_generics #where_clause {
         #[doc=concat!("Generated array of field names for `", stringify!(#name #type_generics), "`.")]
-        #vis const FIELD_NAMES_AS_ARRAY: &'static [&'static str] =
-          &[#field_names];
+        #vis const FIELD_NAMES_AS_ARRAY: [&'static str; #len] = [#field_names];
       }
     };
 
