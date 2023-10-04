@@ -1,5 +1,4 @@
-#![doc = include_str!("../README.md")]
-
+/// TODO: top-level docs referring to other crate
 extern crate proc_macro;
 use proc_macro::TokenStream;
 
@@ -14,29 +13,6 @@ mod attrs;
 
 use attrs::{ContainerAttribute, FieldAttribute, ParseAttribute};
 
-/// Adds the `FIELD_NAMES_AS_ARRAY` constant to the deriving struct.
-///
-/// # Panics
-///
-/// If the token stream is not coming from a named struct or if
-/// the `field_names_as_array` attribute is used wrongfully, deriving
-/// this macro will fail.
-///
-/// # Examples
-///
-/// ```
-/// use struct_field_names_as_array::FieldNamesAsArray;
-///
-/// #[derive(FieldNamesAsArray)]
-/// struct Foo {
-///     bar: String,
-///     baz: String,
-///     bat: String,
-/// }
-///
-/// assert_eq!(Foo::FIELD_NAMES_AS_ARRAY, ["bar", "baz", "bat"]);
-/// ```
-///
 #[proc_macro_derive(FieldNamesAsArray, attributes(field_names_as_array))]
 pub fn derive_field_names_as_array(input: TokenStream) -> TokenStream {
     let input = parse_macro_input!(input as DeriveInput);
