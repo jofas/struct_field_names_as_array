@@ -104,7 +104,7 @@ impl RenameAll {
             }
         }
 
-        panic!("unable to parse rename_all rule: {}", s);
+        panic!("unable to parse rename_all rule: {s}");
     }
 
     fn apply(self, v: &str) -> String {

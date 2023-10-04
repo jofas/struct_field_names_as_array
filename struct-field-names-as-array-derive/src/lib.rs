@@ -13,6 +13,7 @@ mod attrs;
 
 use attrs::{ContainerAttribute, FieldAttribute, ParseAttribute};
 
+#[allow(clippy::missing_panics_doc)]
 #[proc_macro_derive(FieldNamesAsArray, attributes(field_names_as_array))]
 pub fn derive_field_names_as_array(input: TokenStream) -> TokenStream {
     let input = parse_macro_input!(input as DeriveInput);
