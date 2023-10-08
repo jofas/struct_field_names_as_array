@@ -6,7 +6,7 @@ edition = "2021"
 license = "MIT"
 readme = "README.md"
 description = "Crate for generating the field names of named structs as constants"
-keywords = ["introspection"]
+keywords = ["reflection", "introspection"]
 homepage = "https://github.com/jofas/struct_field_names_as_array"
 repository = "https://github.com/jofas/struct_field_names_as_array"
 
