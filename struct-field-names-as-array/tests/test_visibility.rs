@@ -1,5 +1,7 @@
 #![allow(dead_code)]
 
+use struct_field_names_as_array::FieldNamesAsArray;
+
 mod test {
     use struct_field_names_as_array::FieldNamesAsArray;
 
