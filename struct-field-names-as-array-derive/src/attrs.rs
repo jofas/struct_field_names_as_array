@@ -1,4 +1,4 @@
-use syn::{meta::ParseNestedMeta, AttrStyle, Attribute, LitStr, Result, Visibility};
+use syn::{meta::ParseNestedMeta, AttrStyle, Attribute, LitStr, Result};
 
 pub fn parse_attributes<A: ParseAttribute + Default>(attrs: &[Attribute]) -> Result<A> {
     let mut res = A::default();
@@ -24,16 +24,11 @@ pub trait ParseAttribute {
 
 pub struct ContainerAttributes {
     rename_all: RenameAll,
-    visibility: Visibility,
 }
 
 impl ContainerAttributes {
     pub fn apply_to_field(&self, field: &str) -> String {
         self.rename_all.rename_field(field)
-    }
-
-    pub fn visibility(&self) -> &Visibility {
-        &self.visibility
     }
 }
 
@@ -48,11 +43,6 @@ impl ParseAttribute for ContainerAttributes {
             return Ok(());
         }
 
-        if m.path.is_ident("visibility") {
-            self.visibility = m.value()?.parse()?;
-            return Ok(());
-        }
-
         Err(m.error("unknown attribute"))
     }
 }
@@ -61,7 +51,6 @@ impl Default for ContainerAttributes {
     fn default() -> Self {
         Self {
             rename_all: RenameAll::Snake,
-            visibility: Visibility::Inherited,
         }
     }
 }
@@ -85,10 +74,6 @@ impl ParseAttribute for FieldAttributes {
     fn parse_attribute(&mut self, m: ParseNestedMeta) -> Result<()> {
         if m.path.is_ident("rename_all") {
             return Err(m.error("rename_all is a container attribute, not a field attribute"));
-        }
-
-        if m.path.is_ident("visibility") {
-            return Err(m.error("visibility is a container attribute, not a field attribute"));
         }
 
         if m.path.is_ident("skip") {

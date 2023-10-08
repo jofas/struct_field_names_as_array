@@ -95,29 +95,6 @@ Namely, all field names must be given in `snake_case`.
 If you don't follow this convention, applying `rename_all` may result in 
 unexpected field names.
 
-#### Visibility
-
-Per default, `FIELD_NAMES_AS_ARRAY` is a private member of the struct. 
-If you want to change the visibility of `FIELD_NAMES_AS_ARRAY`, you can use the 
-`visibility` attribute, providing it with a valid 
-[visibility](https://doc.rust-lang.org/reference/visibility-and-privacy.html):
-
-```rust
-mod foo {
-    use struct_field_names_as_array::FieldNamesAsArray;
-
-    #[derive(FieldNamesAsArray)]
-    #[field_names_as_array(visibility = "pub(super)")]
-    pub(super) struct Foo {
-        bar: String,
-        baz: String,
-        bat: String,
-    }
-}
-
-assert_eq!(foo::Foo::FIELD_NAMES_AS_ARRAY, ["bar", "baz", "bat"]);
-```
-
 ### Field Attributes
 
 Field attributes can be added to the fields of a named struct and 

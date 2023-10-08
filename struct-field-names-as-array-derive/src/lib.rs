@@ -46,9 +46,6 @@ pub fn derive_field_names_as_array(input: TokenStream) -> TokenStream {
 
     let len = field_names.len();
 
-    // TODO: remove
-    let vis = container_attributes.visibility();
-
     let result = quote! {
       impl #impl_generics ::struct_field_names_as_array::FieldNamesAsArray<#len> for #name #type_generics #where_clause {
         #[doc=concat!("Generated array of field names for `", stringify!(#name #type_generics), "`.")]
