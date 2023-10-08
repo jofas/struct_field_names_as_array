@@ -4,15 +4,16 @@ mod test {
     use struct_field_names_as_array::FieldNamesAsArray;
 
     #[derive(FieldNamesAsArray)]
-    #[field_names_as_array(visibility = "pub")]
+    #[field_names_as_array(visibility = pub)]
     pub struct Pub {
         f1: String,
         f2: i64,
         f3: String,
         f4: bool,
     }
+
     #[derive(FieldNamesAsArray)]
-    #[field_names_as_array(visibility = "pub(super)")]
+    #[field_names_as_array(visibility = pub(super))]
     pub struct PubSuper {
         f1: String,
         f2: i64,
@@ -21,7 +22,7 @@ mod test {
     }
 
     #[derive(FieldNamesAsArray)]
-    #[field_names_as_array(visibility = "pub(crate)")]
+    #[field_names_as_array(visibility = pub(crate))]
     pub struct PubCrate {
         f1: String,
         f2: i64,

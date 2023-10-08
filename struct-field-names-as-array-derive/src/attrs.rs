@@ -1,75 +1,102 @@
-use syn::{parse_str, Lit, Meta, NestedMeta, Visibility};
+use syn::{meta::ParseNestedMeta, AttrStyle, Attribute, LitStr, Result, Visibility};
+
+pub fn parse_attributes<A: ParseAttribute + Default>(attrs: &[Attribute]) -> Result<A> {
+    let mut res = A::default();
+
+    for attr in attrs {
+        if attr.style != AttrStyle::Outer {
+            continue;
+        }
+
+        // TODO: pass `field_names_as_array` as argument to this function
+        //       when `field_names_as_slice` becomes a thing
+        if attr.path().is_ident("field_names_as_array") {
+            attr.parse_nested_meta(|meta| res.parse_attribute(meta))?;
+        }
+    }
+
+    Ok(res)
+}
 
 pub trait ParseAttribute {
-    fn parse(m: &NestedMeta) -> Self;
+    fn parse_attribute(&mut self, m: ParseNestedMeta) -> Result<()>;
 }
 
-#[non_exhaustive]
-pub enum ContainerAttribute {
-    RenameAll(RenameAll),
-    Visibility(Visibility),
+pub struct ContainerAttributes {
+    rename_all: RenameAll,
+    visibility: Visibility,
 }
 
-impl ContainerAttribute {
-    pub fn apply(&self, v: &str) -> String {
-        match self {
-            Self::RenameAll(rn) => rn.apply(v),
-            Self::Visibility(_) => v.to_owned(),
+impl ContainerAttributes {
+    pub fn apply_to_field(&self, field: &str) -> String {
+        self.rename_all.rename_field(field)
+    }
+
+    pub fn visibility(&self) -> &Visibility {
+        &self.visibility
+    }
+}
+
+impl ParseAttribute for ContainerAttributes {
+    fn parse_attribute(&mut self, m: ParseNestedMeta) -> Result<()> {
+        if m.path.is_ident("skip") {
+            return Err(m.error("skip is a field attribute, not a container attribute"));
+        }
+
+        if m.path.is_ident("rename_all") {
+            self.rename_all = RenameAll::from_str(&m.value()?.parse::<LitStr>()?.value());
+            return Ok(());
+        }
+
+        if m.path.is_ident("visibility") {
+            self.visibility = m.value()?.parse()?;
+            return Ok(());
+        }
+
+        Err(m.error("unknown attribute"))
+    }
+}
+
+impl Default for ContainerAttributes {
+    fn default() -> Self {
+        Self {
+            rename_all: RenameAll::Snake,
+            visibility: Visibility::Inherited,
         }
     }
 }
 
-impl ParseAttribute for ContainerAttribute {
-    fn parse(m: &NestedMeta) -> Self {
-        match m {
-            NestedMeta::Meta(m) => {
-                let ident = m.path().get_ident();
+#[derive(Default)]
+pub struct FieldAttributes {
+    skip: bool,
+}
 
-                match ident {
-                    Some(i) if i == "skip" => {
-                        panic!("skip is a field attribute, not a container attribute");
-                    }
-                    Some(i) if i == "rename_all" => match m {
-                        Meta::NameValue(mnv) => match &mnv.lit {
-                            Lit::Str(ls) => Self::RenameAll(RenameAll::from_str(&ls.value())),
-                            _ => panic!("attribute rename_all expects a string as value"),
-                        },
-                        _ => panic!("attribute rename_all badly formatted"),
-                    },
-                    Some(i) if i == "visibility" => match m {
-                        Meta::NameValue(mnv) => match &mnv.lit {
-                            Lit::Str(ls) => Self::Visibility(parse_str(&ls.value()).expect("attribute visibility expects the input string to be a valid visiblity")),
-                            _ => panic!("attribute visibility expects a string as value"),
-                        },
-                        _ => panic!("attribute visibility badly formatted"),
-                    },
-                    _ => panic!("unknown attribute"),
-                }
-            }
-            NestedMeta::Lit(_) => panic!("unable to parse attribute"),
+impl FieldAttributes {
+    pub fn apply_to_field(&self, field: &str) -> Option<String> {
+        if self.skip {
+            return None;
         }
+
+        Some(field.to_owned())
     }
 }
 
-pub enum FieldAttribute {
-    Skip,
-}
-
-impl ParseAttribute for FieldAttribute {
-    fn parse(m: &NestedMeta) -> Self {
-        match m {
-            NestedMeta::Meta(m) => match m.path().get_ident() {
-                Some(i) if i == "skip" => Self::Skip,
-                Some(i) if i == "rename_all" => {
-                    panic!("rename_all is a container attribute, not a field attribute");
-                }
-                Some(i) if i == "visibility" => {
-                    panic!("visiblity is a container attribute, not a field attribute");
-                }
-                _ => panic!("unknown attribute"),
-            },
-            NestedMeta::Lit(_) => panic!("unable to parse attribute"),
+impl ParseAttribute for FieldAttributes {
+    fn parse_attribute(&mut self, m: ParseNestedMeta) -> Result<()> {
+        if m.path.is_ident("rename_all") {
+            return Err(m.error("rename_all is a container attribute, not a field attribute"));
         }
+
+        if m.path.is_ident("visibility") {
+            return Err(m.error("visibility is a container attribute, not a field attribute"));
+        }
+
+        if m.path.is_ident("skip") {
+            self.skip = true;
+            return Ok(());
+        }
+
+        Err(m.error("unknown attribute"))
     }
 }
 
@@ -107,7 +134,7 @@ impl RenameAll {
         panic!("unable to parse rename_all rule: {s}");
     }
 
-    fn apply(self, v: &str) -> String {
+    fn rename_field(self, v: &str) -> String {
         match self {
             Self::Lower | Self::Snake => v.to_owned(),
             Self::Upper | Self::ScreamingSnake => v.to_ascii_uppercase(),
@@ -127,11 +154,11 @@ impl RenameAll {
                 pascal
             }
             Self::Camel => {
-                let pascal = Self::Pascal.apply(v);
+                let pascal = Self::Pascal.rename_field(v);
                 pascal[..1].to_ascii_lowercase() + &pascal[1..]
             }
             Self::Kebab => v.replace('_', "-"),
-            Self::ScreamingKebab => Self::ScreamingSnake.apply(v).replace('_', "-"),
+            Self::ScreamingKebab => Self::ScreamingSnake.rename_field(v).replace('_', "-"),
         }
     }
 }
@@ -158,13 +185,16 @@ mod tests {
             ("a", "A", "A", "a", "A", "a", "A"),
             ("z42", "Z42", "Z42", "z42", "Z42", "z42", "Z42"),
         ] {
-            assert_eq!(RenameAll::Upper.apply(original), upper);
-            assert_eq!(RenameAll::Pascal.apply(original), pascal);
-            assert_eq!(RenameAll::Camel.apply(original), camel);
-            assert_eq!(RenameAll::Snake.apply(original), original);
-            assert_eq!(RenameAll::ScreamingSnake.apply(original), screaming);
-            assert_eq!(RenameAll::Kebab.apply(original), kebab);
-            assert_eq!(RenameAll::ScreamingKebab.apply(original), screaming_kebab);
+            assert_eq!(RenameAll::Upper.rename_field(original), upper);
+            assert_eq!(RenameAll::Pascal.rename_field(original), pascal);
+            assert_eq!(RenameAll::Camel.rename_field(original), camel);
+            assert_eq!(RenameAll::Snake.rename_field(original), original);
+            assert_eq!(RenameAll::ScreamingSnake.rename_field(original), screaming);
+            assert_eq!(RenameAll::Kebab.rename_field(original), kebab);
+            assert_eq!(
+                RenameAll::ScreamingKebab.rename_field(original),
+                screaming_kebab
+            );
         }
     }
 }

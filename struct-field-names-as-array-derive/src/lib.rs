@@ -1,17 +1,18 @@
-/// TODO: top-level docs referring to other crate
+//! TODO: top-level docs referring to other crate
+
 extern crate proc_macro;
 use proc_macro::TokenStream;
 
 use quote::quote;
 use syn::punctuated::Punctuated;
 use syn::token::Comma;
-use syn::{parse_macro_input, AttrStyle, Attribute, Data, DeriveInput, Fields, Meta, Visibility};
+use syn::{parse_macro_input, Data, DeriveInput, Fields};
 
 const ERR_MSG: &str = "Derive(FieldNamesAsArray) only applicable to named structs";
 
 mod attrs;
 
-use attrs::{ContainerAttribute, FieldAttribute, ParseAttribute};
+use attrs::{parse_attributes, ContainerAttributes, FieldAttributes};
 
 #[allow(clippy::missing_panics_doc)]
 #[proc_macro_derive(FieldNamesAsArray, attributes(field_names_as_array))]
@@ -21,7 +22,7 @@ pub fn derive_field_names_as_array(input: TokenStream) -> TokenStream {
     let name = &input.ident;
     let (impl_generics, type_generics, where_clause) = &input.generics.split_for_impl();
 
-    let c_attrs = attributes::<ContainerAttribute>(&input.attrs);
+    let container_attributes = parse_attributes::<ContainerAttributes>(&input.attrs).unwrap();
 
     let field_names: Punctuated<String, Comma> = match input.data {
         Data::Struct(data_struct) => match data_struct.fields {
@@ -29,38 +30,23 @@ pub fn derive_field_names_as_array(input: TokenStream) -> TokenStream {
                 .named
                 .into_iter()
                 .filter_map(|f| {
-                    let attrs = attributes::<FieldAttribute>(&f.attrs);
+                    let field_attributes = parse_attributes::<FieldAttributes>(&f.attrs).unwrap();
 
-                    if let Some(attr) = attrs.first() {
-                        match attr {
-                            FieldAttribute::Skip => return None,
-                        }
-                    }
+                    let field = f.ident.unwrap().to_string();
 
-                    let mut res = f.ident.unwrap().to_string();
+                    let field = container_attributes.apply_to_field(&field);
 
-                    for t in &c_attrs {
-                        res = t.apply(&res);
-                    }
-
-                    Some(res)
+                    field_attributes.apply_to_field(&field)
                 })
                 .collect(),
-            _ => panic!("{}", ERR_MSG),
+            _ => panic!("{ERR_MSG}"),
         },
-        _ => panic!("{}", ERR_MSG),
+        _ => panic!("{ERR_MSG}"),
     };
 
     let len = field_names.len();
 
-    let vis = c_attrs
-        .into_iter()
-        .rev()
-        .find_map(|a| match a {
-            ContainerAttribute::Visibility(v) => Some(v),
-            _ => None,
-        })
-        .unwrap_or(Visibility::Inherited);
+    let vis = container_attributes.visibility();
 
     let result = quote! {
       impl #impl_generics #name #type_generics #where_clause {
@@ -70,38 +56,4 @@ pub fn derive_field_names_as_array(input: TokenStream) -> TokenStream {
     };
 
     TokenStream::from(result)
-}
-
-fn attributes<A: ParseAttribute>(attrs: &[Attribute]) -> Vec<A> {
-    let mut res = Vec::new();
-
-    for attr in attrs {
-        if attr.style != AttrStyle::Outer {
-            continue;
-        }
-
-        let attr_name = attr
-            .path
-            .segments
-            .iter()
-            .last()
-            .cloned()
-            .expect("attribute is badly formatted");
-
-        if attr_name.ident != "field_names_as_array" {
-            continue;
-        }
-
-        let meta = attr
-            .parse_meta()
-            .expect("unable to parse attribute to meta");
-
-        if let Meta::List(l) = meta {
-            for arg in l.nested {
-                res.push(A::parse(&arg));
-            }
-        }
-    }
-
-    res
 }
