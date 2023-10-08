@@ -6,7 +6,7 @@ use proc_macro::TokenStream;
 use quote::quote;
 use syn::punctuated::Punctuated;
 use syn::token::Comma;
-use syn::{parse_macro_input, parse_quote, ConstParam, Data, DeriveInput, Fields};
+use syn::{parse_macro_input, Data, DeriveInput, Fields};
 
 const ERR_MSG: &str = "Derive(FieldNamesAsArray) only applicable to named structs";
 
