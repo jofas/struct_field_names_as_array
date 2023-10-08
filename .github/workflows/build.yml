@@ -17,7 +17,7 @@ jobs:
         run: |
           cd repo
           cargo fmt
-          cargo clippy --all-features --all-targets -allow-dirty --fix
+          cargo clippy --all-features --all-targets --allow-dirty --fix
       - name: Toc
         run: |
           curl https://raw.githubusercontent.com/ekalinin/github-markdown-toc/master/gh-md-toc -o gh-md-toc
