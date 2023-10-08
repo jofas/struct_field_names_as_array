@@ -59,7 +59,6 @@ impl ParseAttributes for ContainerAttributes {
 }
 
 pub struct FieldAttributes {
-    attribute: &'static str,
     skip: bool,
 }
 
@@ -74,11 +73,8 @@ impl FieldAttributes {
 }
 
 impl ParseAttributes for FieldAttributes {
-    fn default(attribute: &'static str) -> Self {
-        Self {
-            attribute,
-            skip: false,
-        }
+    fn default(_attribute: &'static str) -> Self {
+        Self { skip: false }
     }
 
     fn parse_attribute(&mut self, m: ParseNestedMeta) -> Result<()> {
