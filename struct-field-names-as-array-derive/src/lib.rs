@@ -71,7 +71,7 @@ pub fn derive_field_names_as_slice(input: TokenStream) -> TokenStream {
     TokenStream::from(quote! {
         impl #impl_generics ::struct_field_names_as_array::FieldNamesAsSlice for #name #type_generics #where_clause {
             #[doc=concat!("Generated slice of field names for `", stringify!(#name #type_generics), "`.")]
-            const FIELD_NAMES_AS_SLICE: &'static [&'static str] = [#(#field_names),*];
+            const FIELD_NAMES_AS_SLICE: &'static [&'static str] = &[#(#field_names),*];
         }
     })
 }
