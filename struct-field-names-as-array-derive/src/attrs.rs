@@ -1,28 +1,28 @@
 use syn::{meta::ParseNestedMeta, AttrStyle, Attribute, LitStr, Result};
 
-pub fn parse_attributes<A: ParseAttribute + Default>(attrs: &[Attribute]) -> Result<A> {
-    let mut res = A::default();
-
-    for attr in attrs {
-        if attr.style != AttrStyle::Outer {
-            continue;
-        }
-
-        // TODO: pass `field_names_as_array` as argument to this function
-        //       when `field_names_as_slice` becomes a thing
-        if attr.path().is_ident("field_names_as_array") {
-            attr.parse_nested_meta(|meta| res.parse_attribute(meta))?;
-        }
-    }
-
-    Ok(res)
-}
-
-pub trait ParseAttribute {
+pub trait ParseAttributes: Sized {
+    fn default(attribute: &'static str) -> Self;
     fn parse_attribute(&mut self, m: ParseNestedMeta) -> Result<()>;
+
+    fn parse_attributes(attribute_name: &'static str, attributes: &[Attribute]) -> Result<Self> {
+        let mut res = Self::default(attribute_name);
+
+        for attribute in attributes {
+            if attribute.style != AttrStyle::Outer {
+                continue;
+            }
+
+            if attribute.path().is_ident(attribute_name) {
+                attribute.parse_nested_meta(|meta| res.parse_attribute(meta))?;
+            }
+        }
+
+        Ok(res)
+    }
 }
 
 pub struct ContainerAttributes {
+    attribute: &'static str,
     rename_all: RenameAll,
 }
 
@@ -30,9 +30,20 @@ impl ContainerAttributes {
     pub fn apply_to_field(&self, field: &str) -> String {
         self.rename_all.rename_field(field)
     }
+
+    pub fn attribute(&self) -> &'static str {
+        self.attribute
+    }
 }
 
-impl ParseAttribute for ContainerAttributes {
+impl ParseAttributes for ContainerAttributes {
+    fn default(attribute: &'static str) -> Self {
+        Self {
+            attribute,
+            rename_all: RenameAll::Snake,
+        }
+    }
+
     fn parse_attribute(&mut self, m: ParseNestedMeta) -> Result<()> {
         if m.path.is_ident("skip") {
             return Err(m.error("skip is a field attribute, not a container attribute"));
@@ -47,16 +58,8 @@ impl ParseAttribute for ContainerAttributes {
     }
 }
 
-impl Default for ContainerAttributes {
-    fn default() -> Self {
-        Self {
-            rename_all: RenameAll::Snake,
-        }
-    }
-}
-
-#[derive(Default)]
 pub struct FieldAttributes {
+    attribute: &'static str,
     skip: bool,
 }
 
@@ -70,7 +73,14 @@ impl FieldAttributes {
     }
 }
 
-impl ParseAttribute for FieldAttributes {
+impl ParseAttributes for FieldAttributes {
+    fn default(attribute: &'static str) -> Self {
+        Self {
+            attribute,
+            skip: false,
+        }
+    }
+
     fn parse_attribute(&mut self, m: ParseNestedMeta) -> Result<()> {
         if m.path.is_ident("rename_all") {
             return Err(m.error("rename_all is a container attribute, not a field attribute"));
