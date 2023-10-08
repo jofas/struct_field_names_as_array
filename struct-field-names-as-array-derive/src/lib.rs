@@ -26,7 +26,11 @@ pub fn derive_field_names_as_array(input: TokenStream) -> TokenStream {
     let container_attributes =
         ContainerAttributes::parse_attributes("field_names_as_array", &input.attrs).unwrap();
 
-    let Data::Struct(DataStruct{ fields: Fields::Named(FieldsNamed { named, ..}), .. }) = input.data else {
+    let Data::Struct(DataStruct {
+        fields: Fields::Named(FieldsNamed { named, .. }),
+        ..
+    }) = input.data
+    else {
         panic!("Derive(FieldNamesAsArray) only applicable to named structs");
     };
 
@@ -54,7 +58,11 @@ pub fn derive_field_names_as_slice(input: TokenStream) -> TokenStream {
     let container_attributes =
         ContainerAttributes::parse_attributes("field_names_as_slice", &input.attrs).unwrap();
 
-    let Data::Struct(DataStruct{ fields: Fields::Named(FieldsNamed { named, ..}), .. }) = input.data else {
+    let Data::Struct(DataStruct {
+        fields: Fields::Named(FieldsNamed { named, .. }),
+        ..
+    }) = input.data
+    else {
         panic!("Derive(FieldNamesAsSlice) only applicable to named structs");
     };
 
