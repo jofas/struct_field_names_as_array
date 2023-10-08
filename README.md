@@ -22,7 +22,6 @@ struct.
    * [Attributes](#attributes)
       * [Container Attributes](#container-attributes)
          * [Rename all](#rename-all)
-         * [Visibility](#visibility)
       * [Field Attributes](#field-attributes)
          * [Skip](#skip)
 <!--te-->
