@@ -1,3 +1,5 @@
+#![doc = include_str!("../README.md")]
+
 /// Derives the [`FieldNamesAsArray`] trait.
 ///
 /// # Panics
@@ -21,7 +23,7 @@
 /// assert_eq!(Foo::FIELD_NAMES_AS_ARRAY, ["bar", "baz", "bat"]);
 /// ```
 ///
-#[cfg(feature = "derive")]
+#[cfg_attr(doc_cfg, doc(cfg(feature = "derive")))]
 pub use struct_field_names_as_array_derive::FieldNamesAsArray;
 
 /// Derives the [`FieldNamesAsSlice`] trait.
@@ -47,7 +49,7 @@ pub use struct_field_names_as_array_derive::FieldNamesAsArray;
 /// assert_eq!(Foo::FIELD_NAMES_AS_SLICE, ["bar", "baz", "bat"]);
 /// ```
 ///
-#[cfg(feature = "derive")]
+#[cfg_attr(doc_cfg, doc(cfg(feature = "derive")))]
 pub use struct_field_names_as_array_derive::FieldNamesAsSlice;
 
 /// Exposes the `FIELD_NAMES_AS_ARRAY` constant.
