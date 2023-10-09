@@ -16,6 +16,7 @@ repository = "https://github.com/jofas/struct_field_names_as_array"
 all-features = true
 
 [features]
+default = ["derive"]
 derive = ["dep:struct-field-names-as-array-derive"]
 
 [dependencies]
