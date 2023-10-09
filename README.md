@@ -7,13 +7,12 @@
 [![Docs](https://img.shields.io/badge/docs-latest-blue.svg)](https://docs.rs/struct-field-names-as-array/latest/struct_field_names_as_array)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
 
-Provides the `FieldNamesAsArray` procedural macro.
-The macro adds the `FIELD_NAMES_AS_ARRAY` constant to the struct the
-macro is dervied on.
-The `FIELD_NAMES_AS_ARRAY` contains the field names of the given 
-struct.
+Provides the `FieldNamesAsArray` and `FieldNamesAsSlice` traits and
+procedural macros for deriving them.
+The traits contain associated constants listing the field names of
+a struct.
 
-**Note:** The macro can only be derived from named structs.
+**Note:** The macros can only be derived from named structs.
 
 ## Table of Contents
 
@@ -28,7 +27,8 @@ struct.
 
 ## Usage
 
-You can derive the `FieldNamesAsArray` macro like this:
+You can derive the `FieldNamesAsArray` and `FieldNamesAsSlice` macros
+like this:
 
 ```rust
 use struct_field_names_as_array::FieldNamesAsArray;
@@ -41,6 +41,19 @@ struct Foo {
 }
 
 assert_eq!(Foo::FIELD_NAMES_AS_ARRAY, ["bar", "baz", "bat"]);
+```
+
+```rust
+use struct_field_names_as_array::FieldNamesAsSlice;
+
+#[derive(FieldNamesAsSlice)]
+struct Foo {
+    bar: String,
+    baz: String,
+    bat: String,
+}
+
+assert_eq!(Foo::FIELD_NAMES_AS_SLICE, ["bar", "baz", "bat"]);
 ```
 
 ## Attributes
