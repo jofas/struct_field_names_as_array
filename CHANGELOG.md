@@ -9,9 +9,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 * `struct-field-names-as-array-derive` crate
 
+* `FieldNamesAsArray` trait
+
+* `FieldNamesAsSlice` trait
+
+* `FieldNamesAsSlice` procedural macro
+
 ### Changed
 
-* Updated Rust edition from 2018 to 2021
+* upgraded rust edition from 2018 to 2021
 
 * `struct-field-names-as-array-derive`: `syn v1 -> v2`
 
