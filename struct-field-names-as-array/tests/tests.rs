@@ -1,3 +1,4 @@
+#![cfg(feature = "derive")]
 #![allow(dead_code)]
 
 use struct_field_names_as_array::{FieldNamesAsArray, FieldNamesAsSlice};

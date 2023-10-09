@@ -36,4 +36,4 @@ jobs:
       - name: Run test suite
         run: |
           cd repo
-          cargo test
+          cargo test --all-features

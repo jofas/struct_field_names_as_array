@@ -21,8 +21,10 @@
 /// assert_eq!(Foo::FIELD_NAMES_AS_ARRAY, ["bar", "baz", "bat"]);
 /// ```
 ///
+#[cfg(feature = "derive")]
 pub use struct_field_names_as_array_derive::FieldNamesAsArray;
 
+#[cfg(feature = "derive")]
 pub use struct_field_names_as_array_derive::FieldNamesAsSlice;
 
 pub trait FieldNamesAsArray<const N: usize> {
