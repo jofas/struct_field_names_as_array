@@ -1,0 +1,23 @@
+[package]
+name = "struct-field-names-as-array"
+version = "0.3.0"
+authors = ["jofas <jonas@fc-web.de>"]
+edition = "2021"
+license = "MIT"
+readme = "README.md"
+description = "Crate for generating the field names of named structs as constants"
+keywords = ["reflection", "introspection"]
+homepage = "https://github.com/jofas/struct_field_names_as_array"
+repository = "https://github.com/jofas/struct_field_names_as_array"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[package.metadata.docs.rs]
+all-features = true
+
+[features]
+default = ["derive"]
+derive = ["dep:struct-field-names-as-array-derive"]
+
+[dependencies]
+struct-field-names-as-array-derive = { path = "../struct-field-names-as-array-derive", version = "=0.3.0", optional = true }
