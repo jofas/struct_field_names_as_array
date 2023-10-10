@@ -17,7 +17,7 @@ jobs:
         run: |
           test "v$(toml get -r struct-field-names-as-array-derive/Cargo.toml package.version)" = "${{ github.ref_name }}"
           test "v$(toml get -r struct-field-names-as-array/Cargo.toml package.version)" = "${{ github.ref_name }}"
-          test "$(toml get -r struct-field-names-as-array/Cargo.toml dependencies.struct-field-names-as-array-derive.version)" = "=${${{ github.ref_name }}:1}"
+          test "$(toml get -r struct-field-names-as-array/Cargo.toml dependencies.struct-field-names-as-array-derive.version)" = "=$(echo ${{ github.ref_name }} | cut -c 2-)"
       - name: Publish
         run: |
           cargo publish -p struct-field-names-as-array-derive
