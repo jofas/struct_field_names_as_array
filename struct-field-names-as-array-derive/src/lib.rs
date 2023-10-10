@@ -1,4 +1,10 @@
-//! TODO: top-level docs referring to other crate
+//! Derive macros for the
+//! [struct-field-names-as-array](https://crates.io/crates/struct-field-names-as-array)
+//! crate.
+//!
+//! Please refer to struct-field-names-as-array's
+//! [documentation](https://docs.rs/struct-field-names-as-array)
+//! for more information.
 
 extern crate proc_macro;
 use proc_macro::TokenStream;
