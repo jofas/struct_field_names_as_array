@@ -35,7 +35,6 @@ struct TestRename {
     c: String,
 }
 
-
 #[test]
 fn test_struct() {
     assert_eq!(Test::FIELD_NAMES_AS_ARRAY, ["f1", "f2", "f3", "f4"]);
