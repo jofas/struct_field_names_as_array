@@ -60,6 +60,7 @@ impl ParseAttributes for ContainerAttributes {
 
 pub struct FieldAttributes {
     skip: bool,
+    rename: Option<String>,
 }
 
 impl FieldAttributes {
@@ -68,13 +69,17 @@ impl FieldAttributes {
             return None;
         }
 
+        if let Some(rename) = &self.rename {
+            return Some(rename.to_owned());
+        }
+
         Some(field.to_owned())
     }
 }
 
 impl ParseAttributes for FieldAttributes {
     fn default(_attribute: &'static str) -> Self {
-        Self { skip: false }
+        Self { skip: false, rename: None }
     }
 
     fn parse_attribute(&mut self, m: ParseNestedMeta) -> Result<()> {
@@ -84,6 +89,11 @@ impl ParseAttributes for FieldAttributes {
 
         if m.path.is_ident("skip") {
             self.skip = true;
+            return Ok(());
+        }
+
+        if m.path.is_ident("rename") {
+            self.rename = Some(m.value()?.parse::<LitStr>()?.value());
             return Ok(());
         }
 

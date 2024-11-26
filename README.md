@@ -24,6 +24,7 @@ listing the field names of a struct.
          * [Rename all](#rename-all)
       * [Field Attributes](#field-attributes)
          * [Skip](#skip)
+         * [Rename](#rename)
 <!--te-->
 
 ## Usage
@@ -131,6 +132,24 @@ struct Foo {
 }
 
 assert_eq!(Foo::FIELD_NAMES_AS_SLICE, ["bar", "baz"]);
+```
+
+#### Rename
+
+The `rename` attribute renames the field in the generated constant.
+
+```rust
+use struct_field_names_as_array::FieldNamesAsArray;
+
+#[derive(FieldNamesAsArray)]
+struct Foo {
+    bar: String,
+    baz: String,
+    #[field_names_as_array(rename = "foo")]
+    bat: String,
+}
+
+assert_eq!(Foo::FIELD_NAMES_AS_ARRAY, ["bar", "baz", "foo"]);
 ```
 
 [serde_rename_all]: https://serde.rs/container-attrs.html#rename_all
