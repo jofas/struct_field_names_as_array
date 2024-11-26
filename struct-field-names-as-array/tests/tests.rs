@@ -26,6 +26,7 @@ struct TestSkip {
     #[field_names_as_slice(skip)]
     c: String,
 }
+
 #[derive(FieldNamesAsArray, FieldNamesAsSlice)]
 struct TestRename {
     a: String,
