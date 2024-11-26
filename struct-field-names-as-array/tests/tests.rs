@@ -27,6 +27,15 @@ struct TestSkip {
     c: String,
 }
 
+#[derive(FieldNamesAsArray, FieldNamesAsSlice)]
+struct TestRename {
+    a: String,
+    b: String,
+    #[field_names_as_array(rename = "last_option")]
+    #[field_names_as_slice(rename = "last_option")]
+    c: String,
+}
+
 #[test]
 fn test_struct() {
     assert_eq!(Test::FIELD_NAMES_AS_ARRAY, ["f1", "f2", "f3", "f4"]);
@@ -49,4 +58,10 @@ fn test_generics_struct() {
 fn test_skip() {
     assert_eq!(TestSkip::FIELD_NAMES_AS_ARRAY, ["a", "b"]);
     assert_eq!(TestSkip::FIELD_NAMES_AS_SLICE, ["a", "b"]);
+}
+
+#[test]
+fn test_rename() {
+    assert_eq!(TestRename::FIELD_NAMES_AS_ARRAY, ["a", "b", "last_option"]);
+    assert_eq!(TestRename::FIELD_NAMES_AS_SLICE, ["a", "b", "last_option"]);
 }
