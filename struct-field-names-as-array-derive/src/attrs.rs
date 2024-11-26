@@ -79,7 +79,10 @@ impl FieldAttributes {
 
 impl ParseAttributes for FieldAttributes {
     fn default(_attribute: &'static str) -> Self {
-        Self { skip: false, rename: None }
+        Self {
+            skip: false,
+            rename: None,
+        }
     }
 
     fn parse_attribute(&mut self, m: ParseNestedMeta) -> Result<()> {
